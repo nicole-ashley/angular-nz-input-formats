@@ -1,0 +1,9 @@
+bower_components
+node_modules
+build
+.DS_Store
+
+src/*.js
+src/*.js.map
+test/*.js
+test/*.js.map

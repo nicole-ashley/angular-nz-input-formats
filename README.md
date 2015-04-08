@@ -20,7 +20,7 @@ Usage
 -----
 
 ```html
-<input ng-model="irdNumber" type="text" nz-bank-number />
-<input ng-model="irdNumber" type="text" nz-ird-number />
-<input ng-model="irdNumber" type="text" nz-phone-number />
+<input ng-model="bankNumber" nz-bank-number />
+<input ng-model="irdNumber" nz-ird-number />
+<input ng-model="phoneNumber" nz-phone-number />
 ```

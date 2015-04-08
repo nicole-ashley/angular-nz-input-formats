@@ -12,6 +12,8 @@ Angular directives to validate and format NZ-specific input types
 Installation
 ------------
 
+`npm install angular-nz-input-formats`
+or
 `bower install angular-nz-input-formats`
 
 Then add `nzInputFormats` to your angular dependencies

@@ -81,7 +81,7 @@ gulp.task('test', ['buildDev', 'buildTest'], function () {
   return gulp.src(files.mergeFilesFor('karma-src')).pipe(karmaTestConfig);
 });
 
-gulp.task('testBuild', function () {
+gulp.task('testBuild', ['buildTest'], function () {
   return gulp.src(files.mergeFilesFor('karma-build')).pipe(karmaTestConfig);
 });
 
@@ -89,6 +89,6 @@ gulp.task('testMin', function () {
   return gulp.src(files.mergeFilesFor('karma-min')).pipe(karmaTestConfig);
 });
 
-gulp.task('build', gulpSequence('buildDev', 'minBuild', ['testBuild', 'testMin']));
+gulp.task('build', gulpSequence('buildDev', 'minBuild', 'testBuild', 'testMin'));
 
 gulp.task('release', gulpSequence('bump', 'build', 'copyBuild'));

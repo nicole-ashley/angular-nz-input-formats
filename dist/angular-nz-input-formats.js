@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.1.0
+ * @version v0.1.1
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -190,122 +190,122 @@ var NZInputFormats;
             };
             this.prefixes = {
                 '01': {
-                    name: 'ANZ',
+                    // ANZ
                     from: 1,
                     to: 5699
                 },
                 '12': {
-                    name: 'ASB',
+                    // ASB
                     from: 3000,
                     to: 3499
                 },
                 '02': {
-                    name: 'BNZ / The Cooperative Bank',
+                    // BNZ / The Cooperative Bank
                     from: 1,
                     to: 1299
                 },
                 '31': {
-                    name: 'Citibank',
+                    // Citibank
                     from: 2800,
                     to: 2849
                 },
                 '25': {
-                    name: 'ANZ',
+                    // ANZ, ex National Bank of New Zealand (ex Countrywide)
                     from: 2500,
                     to: 2599
                 },
                 '30': {
-                    name: 'HSBC',
+                    // HSBC
                     from: 2900,
                     to: 2956
                 },
                 '38': {
-                    name: 'Kiwibank',
+                    // Kiwibank
                     from: 9000,
                     to: 9499
                 },
                 '08': {
-                    name: 'National Australia Bank',
+                    // National Australia Bank
                     from: 0,
                     to: 9999
                 },
                 '06': {
-                    name: 'ANZ',
+                    // ANZ, ex National Bank of New Zealand
                     from: 1,
                     to: 1499
                 },
                 '11': {
-                    name: 'ANZ',
+                    // ANZ, ex PostBank
                     from: 5000,
                     to: 8999
                 },
                 '21': {
-                    name: 'Trust Bank Auckland',
+                    // Trust Bank Auckland
                     from: 4800,
                     to: 4899
                 },
                 '15': {
-                    name: 'TSB Bank',
+                    // TSB Bank
                     from: 3900,
                     to: 3999
                 },
                 '18': {
-                    name: 'Trust Bank Bay of Plenty',
+                    // Trust Bank Bay of Plenty
                     from: 3500,
                     to: 3599
                 },
                 '16': {
-                    name: 'Trust Bank Canterbury',
+                    // Trust Bank Canterbury
                     from: 4400,
                     to: 4499
                 },
                 '20': {
-                    name: 'Trust Bank Central',
+                    // Trust Bank Central
                     from: 4100,
                     to: 4199
                 },
                 '14': {
-                    name: 'Trust Bank Otago',
+                    // Trust Bank Otago
                     from: 4700,
                     to: 4799
                 },
                 '13': {
-                    name: 'Trust Bank Southland',
+                    // Trust Bank Southland
                     from: 4900,
                     to: 4799
                 },
                 '19': {
-                    name: 'Trust Bank South Canterbury',
+                    // Trust Bank South Canterbury
                     from: 4600,
                     to: 4649
                 },
                 '17': {
-                    name: 'Trust Bank Waikato',
+                    // Trust Bank Waikato
                     from: 3300,
                     to: 3399
                 },
                 '22': {
-                    name: 'Trust Bank Wanganui',
+                    // Trust Bank Wanganui
                     from: 4000,
                     to: 4049
                 },
                 '23': {
-                    name: 'Trust Bank Wellington',
+                    // Trust Bank Wellington
                     from: 3700,
                     to: 3799
                 },
                 '29': {
-                    name: 'United Bank',
+                    // United Bank
                     from: 0,
                     to: 9999
                 },
                 '24': {
-                    name: 'Westland Bank',
+                    // Westland Bank
                     from: 4300,
                     to: 4349
                 },
                 '03': {
-                    name: 'Westpac / RaboBank New Zealand / NZACU',
+                    // Westpac / RaboBank New Zealand / NZACU
                     from: 1,
                     to: 1999
                 }

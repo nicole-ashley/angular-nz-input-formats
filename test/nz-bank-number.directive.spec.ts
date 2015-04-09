@@ -99,6 +99,12 @@ describe('NZ Bank Number', () => {
             compiled.find('input').val('0123456789012345').triggerHandler('input');
             expect(compiled.hasClass('ng-valid')).toBe(true);
         });
+        
+        it('does not strict match by default', () => {
+            // Outside ANZ branch range
+            compiled.find('input').val('01-6789-0123456-78').triggerHandler('input');
+            expect(compiled.hasClass('ng-valid')).toBe(true);
+        });
 
         describe('strict matching', () => {
             beforeEach(() => $scope.options = '{strict: true}');
@@ -114,8 +120,6 @@ describe('NZ Bank Number', () => {
             });
 
             it('returns false when the bank and branch are invalid', () => {
-                $scope.options = '{strict: true}';
-
                 // Outside ANZ branch range
                 compiled.find('input').val('01-6789-0123456-78').triggerHandler('input');
                 expect(compiled.hasClass('ng-invalid')).toBe(true);

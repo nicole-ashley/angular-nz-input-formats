@@ -14,7 +14,7 @@ module NZInputFormats {
 
         protected options:{[option:string]:any} = {
             mask: null,
-            strict: true
+            strict: false
         };
 
         private prefixes:{[bank:string]:BranchRange} = {

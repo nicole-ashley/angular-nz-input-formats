@@ -23,6 +23,7 @@ Usage
 
 ```html
 <input ng-model="bankNumber" nz-bank-number />
+<input ng-model="bankNumber" nz-bank-number="{strict:true}" /> <!-- validates bank and branch ranges -->
 <input ng-model="irdNumber" nz-ird-number />
 <input ng-model="phoneNumber" nz-phone-number />
 ```

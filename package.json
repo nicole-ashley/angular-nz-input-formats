@@ -48,7 +48,6 @@
     "gulp-wrap": "^0.3.0",
     "karma": "^0.12.21",
     "karma-jasmine": "~0.3.5",
-    "karma-nyan-reporter": "~0.0.60",
     "karma-coverage": "~0.2.7",
     "karma-chrome-launcher": "~0.1.0",
     "karma-firefox-launcher": "~0.1.0",

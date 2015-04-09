@@ -9,7 +9,16 @@ module.exports = function (config) {
 
     exclude: [],
 
+    preprocessors: {
+      'build/*.js': ['coverage']
+    },
+
     reporters: ['dots', 'coverage'],
+
+    coverageReporter: {
+      type: 'lcovonly',
+      dir:  'test/coverage'
+    },
 
     port: 9876,
 

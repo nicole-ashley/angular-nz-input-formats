@@ -88,6 +88,7 @@ module NZInputFormats {
                 return output;
             }
 
+            output = String(output);
             var formatted:string = '';
             var rawPos:number = 0;
             this.mask.some((maskChar) => {

@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.1.4
+ * @version v0.1.8
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -84,6 +84,7 @@ var NZInputFormats;
                 // Without a mask we have nothing to do
                 return output;
             }
+            output = String(output);
             var formatted = '';
             var rawPos = 0;
             this.mask.some(function (maskChar) {

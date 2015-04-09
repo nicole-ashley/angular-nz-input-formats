@@ -28,10 +28,12 @@
   ],
   "ignore": [
     "**/.*",
+    "directives",
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "src",
+    "coverage"
   ],
   "dependencies": {
     "angular": "~1.3"

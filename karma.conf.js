@@ -9,7 +9,7 @@ module.exports = function (config) {
 
     exclude: [],
 
-    reporters: ['progress'],
+    reporters: ['nyan', 'coverage'],
 
     port: 9876,
 

@@ -23,7 +23,7 @@ module NZInputFormats {
         }
 
         protected parser(input:string):string {
-            var raw = input.replace(/\D/g, '');
+            var raw = NZPhoneNumber.sanitise(input);
             if(raw.match(/^0[89]0/)) {
                 this.setMask(this.specialMask);
                 this.minLength = 10;
@@ -42,8 +42,12 @@ module NZInputFormats {
         }
 
         protected validator() {
-            var value = String(this.ctrl.$viewValue).replace(/\D/g, '');
+            var value = NZPhoneNumber.sanitise(this.ctrl.$viewValue);
             return value.length === 0 || value.length >= this.minLength;
+        }
+
+        private static sanitise(input) {
+            return String(input).replace(/\D/g, '');
         }
 
     }

@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.1.9
+ * @version v0.1.10
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -490,7 +490,7 @@ var NZInputFormats;
             return inst;
         };
         NZPhoneNumber.prototype.parser = function (input) {
-            var raw = input.replace(/\D/g, '');
+            var raw = NZPhoneNumber.sanitise(input);
             if (raw.match(/^0[89]0/)) {
                 this.setMask(this.specialMask);
                 this.minLength = 10;
@@ -510,8 +510,11 @@ var NZInputFormats;
             return _super.prototype.parser.call(this, input);
         };
         NZPhoneNumber.prototype.validator = function () {
-            var value = String(this.ctrl.$viewValue).replace(/\D/g, '');
+            var value = NZPhoneNumber.sanitise(this.ctrl.$viewValue);
             return value.length === 0 || value.length >= this.minLength;
+        };
+        NZPhoneNumber.sanitise = function (input) {
+            return String(input).replace(/\D/g, '');
         };
         return NZPhoneNumber;
     })(NZInputFormats.SimpleInputMask);

@@ -38,7 +38,7 @@ module NZInputFormats {
                 this.minLength = 9;
             }
             
-            return super.parser(input);
+            return super.parser(raw);
         }
 
         protected validator() {

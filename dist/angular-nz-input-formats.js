@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.1.10
+ * @version v0.1.11
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -507,7 +507,7 @@ var NZInputFormats;
                 this.setMask(this.defaultMask);
                 this.minLength = 9;
             }
-            return _super.prototype.parser.call(this, input);
+            return _super.prototype.parser.call(this, raw);
         };
         NZPhoneNumber.prototype.validator = function () {
             var value = NZPhoneNumber.sanitise(this.ctrl.$viewValue);

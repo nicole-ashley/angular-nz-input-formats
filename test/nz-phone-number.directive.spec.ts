@@ -107,6 +107,13 @@ describe('NZ Phone Number', function () {
             expect(compiled.hasClass('ng-valid')).toBe(true);
         });
 
+        it('returns true if the model value is null', function () {
+            var compiled = compileElement(inputHtml);
+            $scope.x = null;
+            $scope.$digest();
+            expect(compiled.hasClass('ng-valid')).toBe(true);
+        });
+
         validValues.forEach(function (testValue) {
             it('returns true on valid value ' + testValue, function () {
                 var compiled = compileElement(inputHtml);

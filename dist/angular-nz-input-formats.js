@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.1.8
+ * @version v0.1.9
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -137,8 +137,7 @@ var NZInputFormats;
                     }
                 }
                 else {
-                    while (caretPosition < formatted.length
-                        && !this.maskChars.hasOwnProperty(this.mask[caretPosition - 1])) {
+                    while (caretPosition < formatted.length && !this.maskChars.hasOwnProperty(this.mask[caretPosition - 1])) {
                         caretPosition++;
                     }
                 }
@@ -511,13 +510,8 @@ var NZInputFormats;
             return _super.prototype.parser.call(this, input);
         };
         NZPhoneNumber.prototype.validator = function () {
-            var value = this.ctrl.$viewValue;
-            if (value === 'undefined' || value === '') {
-                // No validation for an undefined model value
-                return true;
-            }
-            value = value.replace(/\D/g, '');
-            return value.length >= this.minLength;
+            var value = String(this.ctrl.$viewValue).replace(/\D/g, '');
+            return value.length === 0 || value.length >= this.minLength;
         };
         return NZPhoneNumber;
     })(NZInputFormats.SimpleInputMask);

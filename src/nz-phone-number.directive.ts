@@ -42,14 +42,8 @@ module NZInputFormats {
         }
 
         protected validator() {
-            var value = this.ctrl.$viewValue;
-            if (value === 'undefined' || value === '') {
-                // No validation for an undefined model value
-                return true;
-            }
-
-            value = value.replace(/\D/g, '');
-            return value.length >= this.minLength;
+            var value = String(this.ctrl.$viewValue).replace(/\D/g, '');
+            return value.length === 0 || value.length >= this.minLength;
         }
 
     }

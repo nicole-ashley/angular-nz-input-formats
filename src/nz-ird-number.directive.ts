@@ -7,15 +7,15 @@ module NZInputFormats {
         shortMask:string = '99-999-999';
         longMask:string = '999-999-999';
 
+        public directiveName:string = 'nzIrdNumber';
+
         constructor() {
             super();
             this.setMask(this.shortMask);
         }
 
-        public static Factory($document):NZIrdNumber {
-            var inst = new NZIrdNumber();
-            inst.document = $document[0];
-            return inst;
+        public static Directive($document):angular.IDirective {
+            return SimpleInputMask.Directive($document, NZIrdNumber);
         }
 
         protected parser(input) {
@@ -97,6 +97,6 @@ module NZInputFormats {
 
     }
 
-    module.directive('nzIrdNumber', ['$document', NZIrdNumber.Factory]);
+    module.directive('nzIrdNumber', ['$document', NZIrdNumber.Directive]);
 
 }

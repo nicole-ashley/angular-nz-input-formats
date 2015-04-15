@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.1.11
+ * @version v0.1.12
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -23,7 +23,7 @@ var NZInputFormats;
             this.require = 'ngModel';
             this.restrict = 'A';
             this.link = null;
-            this.name = undefined;
+            this.directiveName = 'nzSimpleInputMask';
             this.options = {
                 mask: null
             };
@@ -53,19 +53,27 @@ var NZInputFormats;
                 }
             }
         };
-        SimpleInputMask.Factory = function ($document) {
-            var inst = new SimpleInputMask();
-            inst.document = $document[0];
-            return inst;
+        SimpleInputMask.Directive = function ($document, T) {
+            if (T === void 0) { T = SimpleInputMask; }
+            SimpleInputMask.Document = $document[0];
+            return {
+                require: 'ngModel',
+                restrict: 'A',
+                link: function link(scope, elem, attrs, ctrl, transclude) {
+                    var inst = new T();
+                    inst.document = SimpleInputMask.Document;
+                    return inst.doLink(scope, elem, attrs, ctrl, transclude);
+                }
+            };
         };
-        SimpleInputMask.prototype.doLink = function (scope, elem, attrs, ctrl) {
+        SimpleInputMask.prototype.doLink = function (scope, elem, attrs, ctrl, transclude) {
             this.scope = scope;
             this.elem = elem;
             this.ctrl = ctrl;
-            attrs.$observe(this.name, angular.bind(this, this.processAttributeValue));
+            attrs.$observe(this.directiveName, angular.bind(this, this.processAttributeValue));
             ctrl.$formatters.push(angular.bind(this, this.formatter));
             ctrl.$parsers.push(angular.bind(this, this.parser));
-            ctrl.$validators[this.name] = angular.bind(this, this.validator);
+            ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
         };
         SimpleInputMask.prototype.processAttributeValue = function (value) {
             var options = this.scope.$eval(value);
@@ -110,6 +118,7 @@ var NZInputFormats;
             var inputChars = input.split('');
             var newInputLength = input.length;
             var parsedParts = [];
+            var elem = this.elem[0];
             this.mask.every(function (maskChar) {
                 var nextInputChar = inputChars[0];
                 if (_this.maskChars.hasOwnProperty(maskChar)) {
@@ -127,7 +136,7 @@ var NZInputFormats;
             });
             var parsed = parsedParts.join('');
             var formatted = this.formatter(parsed);
-            var caretPosition = this.elem[0].selectionStart;
+            var caretPosition = elem.selectionStart;
             if (newInputLength > this.lastLen) {
                 var maskChar = this.mask[caretPosition - 1];
                 var currentPositionIsEditable = this.maskChars.hasOwnProperty(maskChar);
@@ -145,8 +154,8 @@ var NZInputFormats;
             this.lastLen = formatted.length;
             this.elem.val(formatted);
             this.ctrl.$setViewValue(formatted);
-            if (this.document.activeElement === this.elem[0]) {
-                this.elem[0].selectionStart = this.elem[0].selectionEnd = caretPosition;
+            if (this.document.activeElement === elem) {
+                elem.selectionStart = elem.selectionEnd = caretPosition;
             }
             return parsed;
         };
@@ -162,10 +171,11 @@ var NZInputFormats;
                 return this.ctrl.$viewValue.length === this.mask.length;
             }
         };
+        SimpleInputMask.Document = null;
         return SimpleInputMask;
     })();
     NZInputFormats.SimpleInputMask = SimpleInputMask;
-    NZInputFormats.module.directive('nzSimpleInputMask', ['$document', SimpleInputMask.Factory]);
+    NZInputFormats.module.directive('nzSimpleInputMask', ['$document', SimpleInputMask.Directive]);
 })(NZInputFormats || (NZInputFormats = {}));
 
 ///<reference path="angular-nz-input-formats.ts"/>
@@ -184,6 +194,7 @@ var NZInputFormats;
             _super.call(this);
             this.shortMask = '99-9999-9999999-99';
             this.longMask = '99-9999-9999999-999';
+            this.directiveName = 'nzBankNumber';
             this.options = {
                 mask: null,
                 strict: false
@@ -312,10 +323,8 @@ var NZInputFormats;
             };
             this.setMask(this.shortMask);
         }
-        NZBankNumber.Factory = function ($document) {
-            var inst = new NZBankNumber();
-            inst.document = $document[0];
-            return inst;
+        NZBankNumber.Directive = function ($document) {
+            return NZInputFormats.SimpleInputMask.Directive($document, NZBankNumber);
         };
         NZBankNumber.prototype.parser = function (input) {
             if (input.replace(/\D/g, '').length <= 15) {
@@ -359,7 +368,7 @@ var NZInputFormats;
         return NZBankNumber;
     })(NZInputFormats.SimpleInputMask);
     NZInputFormats.NZBankNumber = NZBankNumber;
-    NZInputFormats.module.directive('nzBankNumber', ['$document', NZBankNumber.Factory]);
+    NZInputFormats.module.directive('nzBankNumber', ['$document', NZBankNumber.Directive]);
 })(NZInputFormats || (NZInputFormats = {}));
 
 ///<reference path="angular-nz-input-formats.ts"/>
@@ -378,12 +387,11 @@ var NZInputFormats;
             _super.call(this);
             this.shortMask = '99-999-999';
             this.longMask = '999-999-999';
+            this.directiveName = 'nzIrdNumber';
             this.setMask(this.shortMask);
         }
-        NZIrdNumber.Factory = function ($document) {
-            var inst = new NZIrdNumber();
-            inst.document = $document[0];
-            return inst;
+        NZIrdNumber.Directive = function ($document) {
+            return NZInputFormats.SimpleInputMask.Directive($document, NZIrdNumber);
         };
         NZIrdNumber.prototype.parser = function (input) {
             if (input.replace(/\D/g, '').length <= 8) {
@@ -460,7 +468,7 @@ var NZInputFormats;
         return NZIrdNumber;
     })(NZInputFormats.SimpleInputMask);
     NZInputFormats.NZIrdNumber = NZIrdNumber;
-    NZInputFormats.module.directive('nzIrdNumber', ['$document', NZIrdNumber.Factory]);
+    NZInputFormats.module.directive('nzIrdNumber', ['$document', NZIrdNumber.Directive]);
 })(NZInputFormats || (NZInputFormats = {}));
 
 ///<reference path="angular-nz-input-formats.ts"/>
@@ -478,16 +486,15 @@ var NZInputFormats;
         function NZPhoneNumber() {
             _super.call(this);
             this.defaultMask = '999999999999';
-            this.mobileMask = '999 999 999 999';
+            this.mobileMask = '999 999 999999';
             this.landlineMask = '99 999 9999';
             this.specialMask = '9999 999 999 9999';
+            this.directiveName = 'nzPhoneNumber';
             this.minLength = 0;
             this.setMask(this.defaultMask);
         }
-        NZPhoneNumber.Factory = function ($document) {
-            var inst = new NZPhoneNumber();
-            inst.document = $document[0];
-            return inst;
+        NZPhoneNumber.Directive = function ($document) {
+            return NZInputFormats.SimpleInputMask.Directive($document, NZPhoneNumber);
         };
         NZPhoneNumber.prototype.parser = function (input) {
             var raw = NZPhoneNumber.sanitise(input);
@@ -507,7 +514,7 @@ var NZInputFormats;
                 this.setMask(this.defaultMask);
                 this.minLength = 9;
             }
-            return _super.prototype.parser.call(this, raw);
+            return _super.prototype.parser.call(this, String(input));
         };
         NZPhoneNumber.prototype.validator = function () {
             var value = NZPhoneNumber.sanitise(this.ctrl.$viewValue);
@@ -519,6 +526,6 @@ var NZInputFormats;
         return NZPhoneNumber;
     })(NZInputFormats.SimpleInputMask);
     NZInputFormats.NZPhoneNumber = NZPhoneNumber;
-    NZInputFormats.module.directive('nzPhoneNumber', ['$document', NZPhoneNumber.Factory]);
+    NZInputFormats.module.directive('nzPhoneNumber', ['$document', NZPhoneNumber.Directive]);
 })(NZInputFormats || (NZInputFormats = {}));
 })(window, window.angular);

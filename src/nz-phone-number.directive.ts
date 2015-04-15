@@ -5,9 +5,11 @@ module NZInputFormats {
 
     export class NZPhoneNumber extends SimpleInputMask {
         defaultMask:string = '999999999999';
-        mobileMask:string = '999 999 999 999';
+        mobileMask:string = '999 999 999999';
         landlineMask:string = '99 999 9999';
         specialMask:string = '9999 999 999 9999';
+
+        public directiveName:string = 'nzPhoneNumber';
         
         minLength = 0;
 
@@ -16,10 +18,8 @@ module NZInputFormats {
             this.setMask(this.defaultMask);
         }
 
-        public static Factory($document):NZPhoneNumber {
-            var inst = new NZPhoneNumber();
-            inst.document = $document[0];
-            return inst;
+        public static Directive($document):angular.IDirective {
+            return SimpleInputMask.Directive($document, NZPhoneNumber);
         }
 
         protected parser(input:string):string {
@@ -38,7 +38,7 @@ module NZInputFormats {
                 this.minLength = 9;
             }
             
-            return super.parser(raw);
+            return super.parser(String(input));
         }
 
         protected validator() {
@@ -52,5 +52,5 @@ module NZInputFormats {
 
     }
 
-    module.directive('nzPhoneNumber', ['$document', NZPhoneNumber.Factory]);
+    module.directive('nzPhoneNumber', ['$document', NZPhoneNumber.Directive]);
 }

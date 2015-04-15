@@ -16,7 +16,9 @@ module NZInputFormats {
         public require = 'ngModel';
         public restrict = 'A';
         public link:Function = null;
-        public name:string = undefined;
+        public directiveName:string = 'nzSimpleInputMask';
+
+        protected static Document:Document = null;
 
         protected options:{[key:string]:any} = {
             mask: null
@@ -29,12 +31,12 @@ module NZInputFormats {
             '9': /[0-9]/
         };
 
-        scope = null;
-        elem = null;
-        ctrl = null;
-        document = null;
+        protected scope:angular.IScope = null;
+        protected elem:angular.IAugmentedJQuery = null;
+        protected ctrl:any = null;
+        protected document:Document = null;
 
-        lastLen:number = 0;
+        private lastLen:number = 0;
 
         constructor(mask:string = null, maskChars:MaskDictionary = null) {
             this.setMask(mask);
@@ -54,21 +56,31 @@ module NZInputFormats {
             }
         }
 
-        public static Factory($document):SimpleInputMask {
-            var inst = new SimpleInputMask();
-            inst.document = $document[0];
-            return inst;
+        public static Directive($document, T = SimpleInputMask):angular.IDirective {
+            SimpleInputMask.Document = $document[0];
+            return {
+                require: 'ngModel',
+                restrict: 'A',
+                link: function link(scope:angular.IScope, elem:angular.IAugmentedJQuery, attrs:angular.IAttributes,
+                                    ctrl:any, transclude:angular.ITranscludeFunction) {
+                    var inst = new T();
+                    inst.document = SimpleInputMask.Document;
+                    return inst.doLink(scope, elem, attrs, ctrl, transclude);
+                }
+            };
         }
 
-        protected doLink(scope, elem, attrs:angular.IAttributes, ctrl):void {
+        protected doLink(scope:angular.IScope, elem:angular.IAugmentedJQuery, attrs:angular.IAttributes, ctrl:any,
+                         transclude:angular.ITranscludeFunction):void {
             this.scope = scope;
             this.elem = elem;
             this.ctrl = ctrl;
-            attrs.$observe(this.name, <ObserveCallback>angular.bind(this, this.processAttributeValue));
+
+            attrs.$observe(this.directiveName, <ObserveCallback>angular.bind(this, this.processAttributeValue));
 
             ctrl.$formatters.push(angular.bind(this, this.formatter));
             ctrl.$parsers.push(angular.bind(this, this.parser));
-            ctrl.$validators[this.name] = angular.bind(this, this.validator);
+            ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
         }
 
         protected processAttributeValue(value) {
@@ -113,6 +125,7 @@ module NZInputFormats {
             var inputChars:string[] = input.split('');
             var newInputLength:number = input.length;
             var parsedParts:string[] = [];
+            var elem:HTMLInputElement = <HTMLInputElement>this.elem[0];
 
             this.mask.every((maskChar:string) => {
                 var nextInputChar:string = inputChars[0];
@@ -133,8 +146,8 @@ module NZInputFormats {
             var parsed:string = parsedParts.join('');
 
             var formatted:string = this.formatter(parsed);
-            var caretPosition:number = this.elem[0].selectionStart;
-            
+            var caretPosition:number = elem.selectionStart;
+
             if (newInputLength > this.lastLen) {
                 var maskChar:string = this.mask[caretPosition - 1];
                 var currentPositionIsEditable:boolean = this.maskChars.hasOwnProperty(maskChar);
@@ -154,9 +167,9 @@ module NZInputFormats {
 
             this.elem.val(formatted);
             this.ctrl.$setViewValue(formatted);
-            
-            if (this.document.activeElement === this.elem[0]) {
-                this.elem[0].selectionStart = this.elem[0].selectionEnd = caretPosition;
+
+            if (this.document.activeElement === elem) {
+                elem.selectionStart = elem.selectionEnd = caretPosition;
             }
 
             return parsed;
@@ -176,6 +189,6 @@ module NZInputFormats {
         }
     }
 
-    module.directive('nzSimpleInputMask', ['$document', SimpleInputMask.Factory]);
+    module.directive('nzSimpleInputMask', ['$document', SimpleInputMask.Directive]);
 
 }

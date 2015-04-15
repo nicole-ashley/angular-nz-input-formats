@@ -76,7 +76,7 @@ describe('NZ Phone Number', function () {
 
             input.val('021234567890').triggerHandler('input');
 
-            expect(input.val()).toBe('021 234 567 890');
+            expect(input.val()).toBe('021 234 567890');
         });
 
         it('correctly formats a special number', () => {

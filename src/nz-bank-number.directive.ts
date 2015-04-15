@@ -12,6 +12,8 @@ module NZInputFormats {
         private shortMask:string = '99-9999-9999999-99';
         private longMask:string = '99-9999-9999999-999';
 
+        public directiveName:string = 'nzBankNumber';
+
         protected options:{[option:string]:any} = {
             mask: null,
             strict: false
@@ -145,10 +147,8 @@ module NZInputFormats {
             this.setMask(this.shortMask);
         }
 
-        public static Factory($document):NZBankNumber {
-            var inst = new NZBankNumber();
-            inst.document = $document[0];
-            return inst;
+        public static Directive($document):angular.IDirective {
+            return SimpleInputMask.Directive($document, NZBankNumber);
         }
 
         protected parser(input:string):string {
@@ -198,6 +198,6 @@ module NZInputFormats {
         }
     }
 
-    module.directive('nzBankNumber', ['$document', NZBankNumber.Factory]);
+    module.directive('nzBankNumber', ['$document', NZBankNumber.Directive]);
 
 }

@@ -66,7 +66,9 @@ describe('NZ Phone Number', function () {
         it('correctly formats a landline number', () => {
             var input = compileElement(inputHtml).find('input');
 
-            input.val('098765432').triggerHandler('input');
+            $scope.$apply(function() {
+                $scope.x = '098765432'
+            });
 
             expect(input.val()).toBe('09 876 5432');
         });
@@ -74,7 +76,9 @@ describe('NZ Phone Number', function () {
         it('correctly formats a mobile number', () => {
             var input = compileElement(inputHtml).find('input');
 
-            input.val('021234567890').triggerHandler('input');
+            $scope.$apply(function() {
+                $scope.x = '021234567890';
+            });
 
             expect(input.val()).toBe('021 234 567890');
         });
@@ -82,7 +86,9 @@ describe('NZ Phone Number', function () {
         it('correctly formats a special number', () => {
             var input = compileElement(inputHtml).find('input');
 
-            input.val('0800123456789').triggerHandler('input');
+            $scope.$apply(function() {
+                $scope.x = '0800123456789';
+            });
 
             expect(input.val()).toBe('0800 123 456 789');
         });

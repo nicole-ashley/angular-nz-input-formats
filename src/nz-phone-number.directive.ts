@@ -22,8 +22,8 @@ module NZInputFormats {
             return SimpleInputMask.Directive($document, NZPhoneNumber);
         }
 
-        protected parser(input:string):string {
-            var raw = NZPhoneNumber.sanitise(input);
+        protected formatter(output:string = ''):string {
+            var raw = NZPhoneNumber.sanitise(output);
             if(raw.match(/^0[89]0/)) {
                 this.setMask(this.specialMask);
                 this.minLength = 10;
@@ -33,12 +33,12 @@ module NZInputFormats {
             } else if (raw.match(/^0[34679]/)) {
                 this.setMask(this.landlineMask);
                 this.minLength = 9;
-            } else {
+            } else if (raw.length !== 0) {
                 this.setMask(this.defaultMask);
                 this.minLength = 9;
             }
-            
-            return super.parser(String(input));
+
+            return super.formatter(output);
         }
 
         protected validator() {

@@ -23,13 +23,24 @@ describe('NZ Phone Number', function () {
         '098765432',
         '0800123456',
         '0800123456789',
-        '0900123456'
+        '0900123456',
+        '6421234567',
+        '64223456789',
+        '6427890123',
+        '6434567890',
+        '6445678901',
+        '6467890123',
+        '6476543210',
+        '6498765432',
+        '64800123456',
+        '64800123456789',
+        '64900123456'
     ];
     var invalidValues = [
         '02123456',
         '09876543',
         '080012345',
-        '090012345',
+        '090012345'
     ];
 
     beforeEach(module('nzInputFormats'));
@@ -73,6 +84,16 @@ describe('NZ Phone Number', function () {
             expect(input.val()).toBe('09 876 5432');
         });
 
+        it('correctly formats a landline number in international format', () => {
+            var input = compileElement(inputHtml).find('input');
+
+            $scope.$apply(function() {
+                $scope.x = '6498765432'
+            });
+
+            expect(input.val()).toBe('649 876 5432');
+        });
+
         it('correctly formats a mobile number', () => {
             var input = compileElement(inputHtml).find('input');
 
@@ -81,6 +102,16 @@ describe('NZ Phone Number', function () {
             });
 
             expect(input.val()).toBe('021 234 567890');
+        });
+
+        it('correctly formats a mobile number in international format', () => {
+            var input = compileElement(inputHtml).find('input');
+
+            $scope.$apply(function() {
+                $scope.x = '6421234567890';
+            });
+
+            expect(input.val()).toBe('6421 234 567890');
         });
 
         it('correctly formats a special number', () => {
@@ -93,6 +124,15 @@ describe('NZ Phone Number', function () {
             expect(input.val()).toBe('0800 123 456 789');
         });
 
+        it('correctly formats a special number in international format', () => {
+            var input = compileElement(inputHtml).find('input');
+
+            $scope.$apply(function() {
+                $scope.x = '64800123456789';
+            });
+
+            expect(input.val()).toBe('64800 123 456 789');
+        });
 
     });
 

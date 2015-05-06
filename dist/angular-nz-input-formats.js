@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.1.13
+ * @version v0.2.0
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -146,7 +146,8 @@ var NZInputFormats;
                     }
                 }
                 else {
-                    while (caretPosition < formatted.length && !this.maskChars.hasOwnProperty(this.mask[caretPosition - 1])) {
+                    while (caretPosition < formatted.length
+                        && !this.maskChars.hasOwnProperty(this.mask[caretPosition - 1])) {
                         caretPosition++;
                     }
                 }
@@ -485,10 +486,13 @@ var NZInputFormats;
         __extends(NZPhoneNumber, _super);
         function NZPhoneNumber() {
             _super.call(this);
-            this.defaultMask = '999999999999';
+            this.defaultMask = '9999999999999';
             this.mobileMask = '999 999 999999';
+            this.intlMobileMask = '9999 999 999999';
             this.landlineMask = '99 999 9999';
+            this.intlLandlineMask = '999 999 9999';
             this.specialMask = '9999 999 999 9999';
+            this.intlSpecialMask = '99999 999 999 9999';
             this.directiveName = 'nzPhoneNumber';
             this.minLength = 0;
             this.setMask(this.defaultMask);
@@ -497,21 +501,27 @@ var NZInputFormats;
             return NZInputFormats.SimpleInputMask.Directive($document, NZPhoneNumber);
         };
         NZPhoneNumber.prototype.formatter = function (output) {
-            if (output === void 0) { output = ''; }
+            if (typeof output === 'undefined' || output === null || output === '') {
+                return output;
+            }
             var raw = NZPhoneNumber.sanitise(output);
+            var intl = raw.substr(0, 2) === '64';
+            if (intl) {
+                raw = '0' + raw.substr(2);
+            }
             if (raw.match(/^0[89]0/)) {
-                this.setMask(this.specialMask);
-                this.minLength = 10;
+                this.setMask(intl ? this.intlSpecialMask : this.specialMask);
+                this.minLength = intl ? 11 : 10;
             }
-            else if (raw.match(/^02/)) {
-                this.setMask(this.mobileMask);
-                this.minLength = 9;
+            else if (raw.substr(0, 2) === '02') {
+                this.setMask(intl ? this.intlMobileMask : this.mobileMask);
+                this.minLength = intl ? 10 : 9;
             }
-            else if (raw.match(/^0[34679]/)) {
-                this.setMask(this.landlineMask);
-                this.minLength = 9;
+            else if (raw.match(/^0[345679]/)) {
+                this.setMask(intl ? this.intlLandlineMask : this.landlineMask);
+                this.minLength = intl ? 10 : 9;
             }
-            else if (raw.length !== 0) {
+            else {
                 this.setMask(this.defaultMask);
                 this.minLength = 9;
             }

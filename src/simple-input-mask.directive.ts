@@ -80,7 +80,9 @@ module NZInputFormats {
 
             ctrl.$formatters.push(angular.bind(this, this.formatter));
             ctrl.$parsers.push(angular.bind(this, this.parser));
-            ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
+            //if(angular.isArray(ctrl.$validators)) {
+            //    ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
+            //}
         }
 
         protected processAttributeValue(value) {
@@ -90,7 +92,11 @@ module NZInputFormats {
                     this.setMask(options['mask']);
                 }
                 this.options = angular.extend(this.options, options);
-                this.ctrl.$$parseAndValidate();
+                if(angular.isFunction(this.ctrl.$$parseAndValidate)) {
+                    this.ctrl.$$parseAndValidate();
+                } else {
+                    this.ctrl.$setViewValue(this.ctrl.$viewValue);
+                }
             }
         }
 
@@ -122,7 +128,7 @@ module NZInputFormats {
                 return input;
             }
 
-            var inputChars:string[] = input.split('');
+            var inputChars:string[] = (input || '').split('');
             var newInputLength:number = input.length;
             var parsedParts:string[] = [];
             var elem:HTMLInputElement = <HTMLInputElement>this.elem[0];
@@ -166,10 +172,20 @@ module NZInputFormats {
             this.lastLen = formatted.length;
 
             this.elem.val(formatted);
-            this.ctrl.$setViewValue(formatted);
+            this.ctrl.$viewValue = formatted;
+            this.ctrl.$render();
 
             if (this.document.activeElement === elem) {
                 elem.selectionStart = elem.selectionEnd = caretPosition;
+            }
+            
+            if(!angular.isArray(this.ctrl.$validators)) {
+                var valid = this.validator();
+                this.ctrl.$setValidity(this.directiveName, valid);
+                // Emulate Angular 1.3 model validation behaviour
+                if(!valid) {
+                    return '';
+                }
             }
 
             return parsed;
@@ -187,6 +203,7 @@ module NZInputFormats {
                 return this.ctrl.$viewValue.length === this.mask.length;
             }
         }
+        
     }
 
     module.directive('nzSimpleInputMask', ['$document', SimpleInputMask.Directive]);

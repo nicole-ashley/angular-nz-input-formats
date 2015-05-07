@@ -26,4 +26,6 @@ Usage
 <input ng-model="bankNumber" nz-bank-number="{strict:true}" /> <!-- validates bank and branch ranges -->
 <input ng-model="irdNumber" nz-ird-number />
 <input ng-model="phoneNumber" nz-phone-number />
+<input ng-model="phoneNumber" nz-phone-number="{intl: true|false}" /> <!-- enforce international|local numbers -->
+<input ng-model="phoneNumber" nz-phone-number="{type: 'mobile'|'landline'|'special'}" /> <!-- enforce a type -->
 ```

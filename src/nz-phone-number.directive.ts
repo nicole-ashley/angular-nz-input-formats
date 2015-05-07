@@ -13,7 +13,7 @@ module NZInputFormats {
         intlSpecialMask:string = '99999 999 999 9999';
 
         public directiveName:string = 'nzPhoneNumber';
-        
+
         minLength = 0;
 
         constructor() {
@@ -26,31 +26,59 @@ module NZInputFormats {
         }
 
         protected formatter(output:string):string {
-            if(typeof output === 'undefined' || output === null || output === '') {
+            if (typeof output === 'undefined' || output === null || output === '') {
                 return output;
             }
-            
+
             var raw = NZPhoneNumber.sanitise(output);
-            
-            var intl = raw.substr(0, 2) === '64';
-            if(intl) {
-               raw = '0' + raw.substr(2); 
+
+            if (angular.isDefined(this.options['intl'])) {
+                if (this.options['intl']) {
+                    raw = raw.match(/^(?:64.*|6)?/)[0];
+                } else {
+                    raw = raw.match(/^(?:0.*)?/)[0];
+                }
             }
-             
-            if(raw.match(/^0[89]0/)) {
+
+            var intl = raw.match(/^(64|6$)/);
+            if (intl) {
+                raw = '0' + raw.substr(2);
+            }
+
+            var type;
+
+            if (raw.match(/^0[89]0/)) {
+                type = 'special';
                 this.setMask(intl ? this.intlSpecialMask : this.specialMask);
                 this.minLength = intl ? 11 : 10;
-            } else if(raw.substr(0, 2) === '02') {
+            } else if (raw.substr(0, 2) === '02') {
+                type = 'mobile';
                 this.setMask(intl ? this.intlMobileMask : this.mobileMask);
                 this.minLength = intl ? 10 : 9;
             } else if (raw.match(/^0[345679]/)) {
+                type = 'landline';
                 this.setMask(intl ? this.intlLandlineMask : this.landlineMask);
                 this.minLength = intl ? 10 : 9;
             } else {
+                type = 'other';
                 this.setMask(this.defaultMask);
                 this.minLength = 9;
             }
-            
+
+            switch (this.options['type']) {
+                case 'special':
+                    raw = raw.match(/^(?:0[89]0.*|0[89]|0)?/)[0];
+                    break;
+                case 'mobile':
+                    raw = raw.match(/^(?:02[1257].*|02|0)?/)[0];
+                    break;
+                case 'landline':
+                    raw = raw.match(/^(?:0[345679].*|0)?/)[0];
+                    break;
+            }
+
+            output = intl ? raw.replace(/^0/, intl[0]) : raw;
+
             return super.formatter(output);
         }
 

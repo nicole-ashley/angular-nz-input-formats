@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.2.0
+ * @version v0.2.1
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -73,7 +73,9 @@ var NZInputFormats;
             attrs.$observe(this.directiveName, angular.bind(this, this.processAttributeValue));
             ctrl.$formatters.push(angular.bind(this, this.formatter));
             ctrl.$parsers.push(angular.bind(this, this.parser));
-            ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
+            //if(angular.isArray(ctrl.$validators)) {
+            //    ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
+            //}
         };
         SimpleInputMask.prototype.processAttributeValue = function (value) {
             var options = this.scope.$eval(value);
@@ -82,7 +84,12 @@ var NZInputFormats;
                     this.setMask(options['mask']);
                 }
                 this.options = angular.extend(this.options, options);
-                this.ctrl.$$parseAndValidate();
+                if (angular.isFunction(this.ctrl.$$parseAndValidate)) {
+                    this.ctrl.$$parseAndValidate();
+                }
+                else {
+                    this.ctrl.$setViewValue(this.ctrl.$viewValue);
+                }
             }
         };
         SimpleInputMask.prototype.formatter = function (output) {
@@ -115,7 +122,7 @@ var NZInputFormats;
                 // Without a mask we have nothing to do
                 return input;
             }
-            var inputChars = input.split('');
+            var inputChars = (input || '').split('');
             var newInputLength = input.length;
             var parsedParts = [];
             var elem = this.elem[0];
@@ -154,9 +161,18 @@ var NZInputFormats;
             }
             this.lastLen = formatted.length;
             this.elem.val(formatted);
-            this.ctrl.$setViewValue(formatted);
+            this.ctrl.$viewValue = formatted;
+            this.ctrl.$render();
             if (this.document.activeElement === elem) {
                 elem.selectionStart = elem.selectionEnd = caretPosition;
+            }
+            if (!angular.isArray(this.ctrl.$validators)) {
+                var valid = this.validator();
+                this.ctrl.$setValidity(this.directiveName, valid);
+                // Emulate Angular 1.3 model validation behaviour
+                if (!valid) {
+                    return '';
+                }
             }
             return parsed;
         };
@@ -505,26 +521,51 @@ var NZInputFormats;
                 return output;
             }
             var raw = NZPhoneNumber.sanitise(output);
-            var intl = raw.substr(0, 2) === '64';
+            if (angular.isDefined(this.options['intl'])) {
+                if (this.options['intl']) {
+                    raw = raw.match(/^(?:64.*|6)?/)[0];
+                }
+                else {
+                    raw = raw.match(/^(?:0.*)?/)[0];
+                }
+            }
+            var intl = raw.match(/^(64|6$)/);
             if (intl) {
                 raw = '0' + raw.substr(2);
             }
+            var type;
             if (raw.match(/^0[89]0/)) {
+                type = 'special';
                 this.setMask(intl ? this.intlSpecialMask : this.specialMask);
                 this.minLength = intl ? 11 : 10;
             }
             else if (raw.substr(0, 2) === '02') {
+                type = 'mobile';
                 this.setMask(intl ? this.intlMobileMask : this.mobileMask);
                 this.minLength = intl ? 10 : 9;
             }
             else if (raw.match(/^0[345679]/)) {
+                type = 'landline';
                 this.setMask(intl ? this.intlLandlineMask : this.landlineMask);
                 this.minLength = intl ? 10 : 9;
             }
             else {
+                type = 'other';
                 this.setMask(this.defaultMask);
                 this.minLength = 9;
             }
+            switch (this.options['type']) {
+                case 'special':
+                    raw = raw.match(/^(?:0[89]0.*|0[89]|0)?/)[0];
+                    break;
+                case 'mobile':
+                    raw = raw.match(/^(?:02[1257].*|02|0)?/)[0];
+                    break;
+                case 'landline':
+                    raw = raw.match(/^(?:0[345679].*|0)?/)[0];
+                    break;
+            }
+            output = intl ? raw.replace(/^0/, intl[0]) : raw;
             return _super.prototype.formatter.call(this, output);
         };
         NZPhoneNumber.prototype.validator = function () {

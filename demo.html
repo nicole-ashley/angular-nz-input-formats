@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html ng-app="nzInputFormats">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<form>
+    <label>
+        Simple Input Mask: {{ simpleInputMask }} <br/>
+        <input name="simple-input-mask" nz-simple-input-mask="{mask: '{{theMask}}' }" ng-model="simpleInputMask"/><br/>
+        <input name="the-mask" ng-model="theMask"/>
+    </label><br/>
+    <label>
+        IRD Number: {{ irdNumber }} <br/>
+        <input name="ird-number" nz-ird-number ng-model="irdNumber"/>
+    </label><br/>
+    <label>
+        Bank Number: {{ bankNumber }} <br/>
+        <input name="bank-number" nz-bank-number ng-model="bankNumber"/>
+    </label><br/>
+    <label>
+        Phone Number: {{ phoneNumber }} <br/>
+        <input name="phone-number" nz-phone-number="{intl: true, type: 'mobile'}" ng-model="phoneNumber"/>
+    </label><br/>
+</form>
+
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-ui-utils/ui-utils.js"></script>
+<script src="build/angular-nz-input-formats.js"></script>
+</body>
+</html>

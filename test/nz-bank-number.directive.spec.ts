@@ -57,14 +57,6 @@ describe('NZ Bank Number', () => {
             expect(input.val()).toBe('01-2345-6789012-345');
         });
 
-        it('pads the model value with a leading zero in the product segment for short account numbers', () => {
-            var input = compileElement(inputHtml).find('input');
-
-            input.val('012345678901234').triggerHandler('input');
-
-            expect($scope.x).toBe('0123456789012034');
-        });
-
     });
 
 

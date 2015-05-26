@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.2.1
+ * @version v0.2.2
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -153,8 +153,7 @@ var NZInputFormats;
                     }
                 }
                 else {
-                    while (caretPosition < formatted.length
-                        && !this.maskChars.hasOwnProperty(this.mask[caretPosition - 1])) {
+                    while (caretPosition < formatted.length && !this.maskChars.hasOwnProperty(this.mask[caretPosition - 1])) {
                         caretPosition++;
                     }
                 }
@@ -350,12 +349,7 @@ var NZInputFormats;
             else {
                 this.setMask(this.longMask);
             }
-            var parsed = _super.prototype.parser.call(this, input);
-            if (parsed.length === 15) {
-                // We need to pad the last two digits with a zero
-                parsed = parsed.substr(0, 13) + '0' + parsed.substr(-2);
-            }
-            return parsed;
+            return _super.prototype.parser.call(this, input);
         };
         NZBankNumber.prototype.validator = function () {
             var superVal = _super.prototype.validator.call(this);

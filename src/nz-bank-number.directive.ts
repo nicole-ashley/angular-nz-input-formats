@@ -158,12 +158,7 @@ module NZInputFormats {
                 this.setMask(this.longMask);
             }
 
-            var parsed = super.parser(input);
-            if (parsed.length === 15) {
-                // We need to pad the last two digits with a zero
-                parsed = parsed.substr(0, 13) + '0' + parsed.substr(-2);
-            }
-            return parsed;
+            return super.parser(input);
         }
 
         protected validator() {

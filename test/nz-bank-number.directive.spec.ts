@@ -39,7 +39,28 @@ describe('NZ Bank Number', () => {
     });
 
 
-    describe('behaviour', () => {
+    describe('instantiation', () => {
+
+        it('formats a short bank account number correctly', () => {
+            $scope.x = '012345678901234';
+
+            var input = compileElement(inputHtml).find('input');
+
+            expect(input.val()).toBe('01-2345-6789012-34');
+        });
+
+        it('formats a long bank account number correctly', () => {
+            $scope.x = '0123456789012345';
+
+            var input = compileElement(inputHtml).find('input');
+
+            expect(input.val()).toBe('01-2345-6789012-345');
+        });
+
+    });
+
+
+    describe('interaction', () => {
 
         it('formats a short bank account number correctly', () => {
             var input = compileElement(inputHtml).find('input');

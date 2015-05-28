@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.3.0
+ * @version v0.3.1
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -92,9 +92,12 @@ var NZInputFormats;
                 }
             }
         };
+        SimpleInputMask.prototype.updateMask = function (value) {
+        };
         SimpleInputMask.prototype.formatter = function (output) {
             var _this = this;
             if (output === void 0) { output = ''; }
+            this.updateMask(output);
             if (!this.mask) {
                 // Without a mask we have nothing to do
                 return output;
@@ -118,6 +121,7 @@ var NZInputFormats;
         SimpleInputMask.prototype.parser = function (input) {
             var _this = this;
             if (input === void 0) { input = ''; }
+            this.updateMask(input);
             if (!this.mask) {
                 // Without a mask we have nothing to do
                 return input;
@@ -247,14 +251,17 @@ var NZInputFormats;
         NZBankNumber.Directive = function ($document) {
             return NZInputFormats.SimpleInputMask.Directive($document, NZBankNumber);
         };
-        NZBankNumber.prototype.parser = function (input) {
-            if (input.replace(/\D/g, '').length <= 15) {
+        NZBankNumber.prototype.updateMask = function (value) {
+            if (!value) {
+                return;
+            }
+            value = String(value || '');
+            if (value.replace(/\D/g, '').length <= 15) {
                 this.setMask(this.shortMask);
             }
             else {
                 this.setMask(this.longMask);
             }
-            return _super.prototype.parser.call(this, input);
         };
         NZBankNumber.prototype.validator = function () {
             var superVal = _super.prototype.validator.call(this);
@@ -314,14 +321,17 @@ var NZInputFormats;
         NZIrdNumber.Directive = function ($document) {
             return NZInputFormats.SimpleInputMask.Directive($document, NZIrdNumber);
         };
-        NZIrdNumber.prototype.parser = function (input) {
-            if (input.replace(/\D/g, '').length <= 8) {
+        NZIrdNumber.prototype.updateMask = function (value) {
+            if (!value) {
+                return;
+            }
+            value = String(value || '');
+            if (value.replace(/\D/g, '').length <= 8) {
                 this.setMask(this.shortMask);
             }
             else {
                 this.setMask(this.longMask);
             }
-            return _super.prototype.parser.call(this, input);
         };
         NZIrdNumber.prototype.validator = function () {
             if (typeof this.ctrl.$viewValue === 'undefined' || this.ctrl.$viewValue === '') {
@@ -421,7 +431,7 @@ var NZInputFormats;
             return NZInputFormats.SimpleInputMask.Directive($document, NZPhoneNumber);
         };
         NZPhoneNumber.prototype.formatter = function (output) {
-            if (typeof output === 'undefined' || output === null || output === '') {
+            if (!output) {
                 return output;
             }
             var raw = NZPhoneNumber.sanitise(output);

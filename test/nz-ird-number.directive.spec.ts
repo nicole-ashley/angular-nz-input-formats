@@ -52,7 +52,28 @@ describe('NZ IRD Number', function () {
     });
 
 
-    describe('behaviour', () => {
+    describe('instantiation', () => {
+
+        it('correctly formats a short IRD number', () => {
+            $scope.x = '49091850';
+
+            var input = compileElement(inputHtml).find('input');
+
+            expect(input.val()).toBe('49-091-850');
+        });
+
+        it('correctly formats a long IRD number', () => {
+            $scope.x = '136410132';
+
+            var input = compileElement(inputHtml).find('input');
+
+            expect(input.val()).toBe('136-410-132');
+        });
+
+    });
+
+
+    describe('interaction', () => {
 
         it('correctly formats a short IRD number', () => {
             var input = compileElement(inputHtml).find('input');

@@ -18,13 +18,17 @@ module NZInputFormats {
             return SimpleInputMask.Directive($document, NZIrdNumber);
         }
 
-        protected parser(input) {
-            if (input.replace(/\D/g, '').length <= 8) {
+        protected updateMask(value:string):void {
+            if(!value) {
+                return;
+            }
+
+            value = String(value || '');
+            if (value.replace(/\D/g, '').length <= 8) {
                 this.setMask(this.shortMask);
             } else {
                 this.setMask(this.longMask);
             }
-            return super.parser(input);
         }
 
         protected validator() {

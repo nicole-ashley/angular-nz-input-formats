@@ -35,14 +35,17 @@ module NZInputFormats {
             return SimpleInputMask.Directive($document, NZBankNumber);
         }
 
-        protected parser(input:string):string {
-            if (input.replace(/\D/g, '').length <= 15) {
+        protected updateMask(value:string):void {
+            if(!value) {
+                return;
+            }
+
+            value = String(value || '');
+            if (value.replace(/\D/g, '').length <= 15) {
                 this.setMask(this.shortMask);
             } else {
                 this.setMask(this.longMask);
             }
-
-            return super.parser(input);
         }
 
         protected validator() {

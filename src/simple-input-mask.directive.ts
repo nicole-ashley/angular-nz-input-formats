@@ -100,7 +100,11 @@ module NZInputFormats {
             }
         }
 
+        protected updateMask(value):void {
+        }
+
         protected formatter(output:string = ''):string {
+            this.updateMask(output);
             if (!this.mask) {
                 // Without a mask we have nothing to do
                 return output;
@@ -123,6 +127,7 @@ module NZInputFormats {
         }
 
         protected parser(input:string = ''):string {
+            this.updateMask(input);
             if (!this.mask) {
                 // Without a mask we have nothing to do
                 return input;

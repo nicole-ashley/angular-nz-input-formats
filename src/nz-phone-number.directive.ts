@@ -26,7 +26,7 @@ module NZInputFormats {
         }
 
         protected formatter(output:string):string {
-            if (typeof output === 'undefined' || output === null || output === '') {
+            if (!output) {
                 return output;
             }
 

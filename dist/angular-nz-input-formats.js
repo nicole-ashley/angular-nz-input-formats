@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.2.2
+ * @version v0.3.0
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -215,128 +215,33 @@ var NZInputFormats;
                 mask: null,
                 strict: false
             };
-            this.prefixes = {
-                '01': {
-                    // ANZ
-                    from: 1,
-                    to: 5699
-                },
-                '12': {
-                    // ASB
-                    from: 3000,
-                    to: 3499
-                },
-                '02': {
-                    // BNZ / The Cooperative Bank
-                    from: 1,
-                    to: 1299
-                },
-                '31': {
-                    // Citibank
-                    from: 2800,
-                    to: 2849
-                },
-                '25': {
-                    // ANZ, ex National Bank of New Zealand (ex Countrywide)
-                    from: 2500,
-                    to: 2599
-                },
-                '30': {
-                    // HSBC
-                    from: 2900,
-                    to: 2956
-                },
-                '38': {
-                    // Kiwibank
-                    from: 9000,
-                    to: 9499
-                },
-                '08': {
-                    // National Australia Bank
-                    from: 0,
-                    to: 9999
-                },
-                '06': {
-                    // ANZ, ex National Bank of New Zealand
-                    from: 1,
-                    to: 1499
-                },
-                '11': {
-                    // ANZ, ex PostBank
-                    from: 5000,
-                    to: 8999
-                },
-                '21': {
-                    // Trust Bank Auckland
-                    from: 4800,
-                    to: 4899
-                },
-                '15': {
-                    // TSB Bank
-                    from: 3900,
-                    to: 3999
-                },
-                '18': {
-                    // Trust Bank Bay of Plenty
-                    from: 3500,
-                    to: 3599
-                },
-                '16': {
-                    // Trust Bank Canterbury
-                    from: 4400,
-                    to: 4499
-                },
-                '20': {
-                    // Trust Bank Central
-                    from: 4100,
-                    to: 4199
-                },
-                '14': {
-                    // Trust Bank Otago
-                    from: 4700,
-                    to: 4799
-                },
-                '13': {
-                    // Trust Bank Southland
-                    from: 4900,
-                    to: 4799
-                },
-                '19': {
-                    // Trust Bank South Canterbury
-                    from: 4600,
-                    to: 4649
-                },
-                '17': {
-                    // Trust Bank Waikato
-                    from: 3300,
-                    to: 3399
-                },
-                '22': {
-                    // Trust Bank Wanganui
-                    from: 4000,
-                    to: 4049
-                },
-                '23': {
-                    // Trust Bank Wellington
-                    from: 3700,
-                    to: 3799
-                },
-                '29': {
-                    // United Bank
-                    from: 0,
-                    to: 9999
-                },
-                '24': {
-                    // Westland Bank
-                    from: 4300,
-                    to: 4349
-                },
-                '03': {
-                    // Westpac / RaboBank New Zealand / NZACU
-                    from: 1,
-                    to: 1999
-                }
-            };
+            this.banks = [
+                '01',
+                '02',
+                '03',
+                '06',
+                '08',
+                '11',
+                '12',
+                '13',
+                '14',
+                '15',
+                '16',
+                '17',
+                '18',
+                '19',
+                '20',
+                '21',
+                '22',
+                '23',
+                '24',
+                '25',
+                '29',
+                '30',
+                '31',
+                '38'
+            ];
+            this.checksumWeights = [6, 3, 7, 9, 0, 10, 5, 8, 4, 2, 1];
             this.setMask(this.shortMask);
         }
         NZBankNumber.Directive = function ($document) {
@@ -353,11 +258,8 @@ var NZInputFormats;
         };
         NZBankNumber.prototype.validator = function () {
             var superVal = _super.prototype.validator.call(this);
-            if (!this.options['strict']) {
-                return superVal;
-            }
             var value = this.ctrl.$viewValue;
-            if (value === 'undefined' || value === '') {
+            if (angular.isUndefined(value) || value === null || value === '') {
                 // No validation for an undefined model value
                 return true;
             }
@@ -365,16 +267,24 @@ var NZInputFormats;
             if (value.length < 15 || value.length > 16) {
                 return false;
             }
-            var bankCode = value.substr(0, 2);
-            if (this.prefixes.hasOwnProperty(bankCode)) {
-                var bank = this.prefixes[bankCode];
-                var branch = value.substr(2, 4);
-                if (branch.length === 4) {
-                    var branchNumber = Number(branch);
-                    return superVal && branchNumber >= bank.from && branchNumber <= bank.to;
-                }
+            if (!this.options['strict']) {
+                return superVal;
             }
-            return false;
+            if (this.banks.indexOf(value.substr(0, 2)) === -1) {
+                return false;
+            }
+            return this.checksum(value);
+        };
+        NZBankNumber.prototype.checksum = function (accountNumber) {
+            var _this = this;
+            var checksumPart = accountNumber.substr(2, 11);
+            if (checksumPart.length !== 11) {
+                return false;
+            }
+            var checksum = checksumPart.split('').reduce(function (total, current, index) {
+                return total + (parseInt(current, 10) * _this.checksumWeights[index]);
+            }, 0);
+            return checksum % 11 === 0;
         };
         return NZBankNumber;
     })(NZInputFormats.SimpleInputMask);

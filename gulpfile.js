@@ -4,7 +4,6 @@ var gulp         = require('gulp');
 var uglify       = require('gulp-uglify');
 var ts           = require('gulp-typescript');
 var concat       = require('gulp-concat');
-var sourcemaps   = require('gulp-sourcemaps');
 var rename       = require('gulp-rename');
 var wrap         = require('gulp-wrap');
 var bump         = require('gulp-bump');
@@ -24,13 +23,11 @@ var banner = '/*!\n' +
   ' */\n';
 
 var tsDev = ts.createProject({
-  sortOutput:       true,
-  sourceRoot:       ''
+  sortOutput:       true
 });
 
 var tsTest = ts.createProject({
-  sortOutput:       true,
-  sourceRoot:       ''
+  sortOutput:       true
 });
 
 gulp.task('bump', function () {
@@ -41,11 +38,9 @@ gulp.task('bump', function () {
 
 gulp.task('buildDev', function () {
   return gulp.src('src/*.ts')
-    //.pipe(sourcemaps.init())
     .pipe(ts(tsDev)).js
     .pipe(concat('angular-nz-input-formats.js'))
     .pipe(wrap(banner + '(function(window, angular, undefined){<%= contents %>})(window, window.angular);', {pkg: pkg}))
-    //.pipe(sourcemaps.write())
     .pipe(gulp.dest('./build/'));
 });
 
@@ -57,10 +52,8 @@ gulp.task('buildTest', function() {
 
 gulp.task('minBuild', function () {
   return gulp.src('./build/' + pkg.name + '.js')
-    .pipe(sourcemaps.init({loadMaps: true}))
     .pipe(uglify({preserveComments: 'some'}))
     .pipe(rename(pkg.name + '.min.js'))
-    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./build/'));
 });
 

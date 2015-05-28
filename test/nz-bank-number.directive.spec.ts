@@ -102,28 +102,27 @@ describe('NZ Bank Number', () => {
             beforeEach(() => $scope.options = '{strict: true}');
 
             it('returns true when the bank and branch are valid', () => {
-                // Within ANZ branch range
-                compiled.find('input').val('01-2345-6789012-34').triggerHandler('input');
+                // Valid checksum
+                compiled.find('input').val('11-1111-1111111-11').triggerHandler('input');
                 expect(compiled.hasClass('ng-valid')).toBe(true);
 
-                // Within Westpac branch range
-                compiled.find('input').val('03-1234-5678901-23').triggerHandler('input');
+                // Valid checksum
+                compiled.find('input').val('03-1587-0050000-00').triggerHandler('input');
                 expect(compiled.hasClass('ng-valid')).toBe(true);
             });
 
             it('returns false when the bank and branch are invalid', () => {
-                // Outside ANZ branch range
-                compiled.find('input').val('01-6789-0123456-78').triggerHandler('input');
+                // Valid checksum but invalid bank number
+                compiled.find('input').val('40-1587-0050000-00').triggerHandler('input');
                 expect(compiled.hasClass('ng-invalid')).toBe(true);
 
-                // Outside Westpac branch range
-                compiled.find('input').val('03-4567-8901234-56').triggerHandler('input');
+                // Invalid checksum
+                compiled.find('input').val('03-1586-0050010-00').triggerHandler('input');
                 expect(compiled.hasClass('ng-invalid')).toBe(true);
             });
 
         });
 
     });
-
 
 });

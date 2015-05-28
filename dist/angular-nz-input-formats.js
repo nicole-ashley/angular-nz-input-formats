@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.3.2
+ * @version v0.3.3
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -81,7 +81,6 @@ var NZInputFormats;
                     this.setMask(options['mask']);
                 }
                 this.options = angular.extend(this.options, options);
-                this.ctrl.$setViewValue(this.ctrl.$viewValue);
             }
         };
         SimpleInputMask.prototype.updateMask = function (value) {

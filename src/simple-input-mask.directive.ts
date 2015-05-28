@@ -89,7 +89,6 @@ module NZInputFormats {
                     this.setMask(options['mask']);
                 }
                 this.options = angular.extend(this.options, options);
-                this.ctrl.$setViewValue(this.ctrl.$viewValue);
             }
         }
 

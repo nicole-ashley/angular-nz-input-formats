@@ -120,9 +120,12 @@ describe('NZ Bank Number', () => {
         });
 
         describe('strict matching', () => {
-            beforeEach(() => $scope.options = '{strict: true}');
+            beforeEach(() => {
+                $scope.options = '{strict: true}';
+                $scope.$digest();
+            });
 
-            it('returns true when the bank and branch are valid', () => {
+            it('returns true when the bank account number is valid', () => {
                 // Valid checksum
                 compiled.find('input').val('11-1111-1111111-11').triggerHandler('input');
                 expect(compiled.hasClass('ng-valid')).toBe(true);
@@ -132,7 +135,7 @@ describe('NZ Bank Number', () => {
                 expect(compiled.hasClass('ng-valid')).toBe(true);
             });
 
-            it('returns false when the bank and branch are invalid', () => {
+            it('returns false when the bank account number is invalid', () => {
                 // Valid checksum but invalid bank number
                 compiled.find('input').val('40-1587-0050000-00').triggerHandler('input');
                 expect(compiled.hasClass('ng-invalid')).toBe(true);

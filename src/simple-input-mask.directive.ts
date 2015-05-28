@@ -80,9 +80,6 @@ module NZInputFormats {
 
             ctrl.$formatters.push(angular.bind(this, this.formatter));
             ctrl.$parsers.push(angular.bind(this, this.parser));
-            //if(angular.isArray(ctrl.$validators)) {
-            //    ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
-            //}
         }
 
         protected processAttributeValue(value) {
@@ -92,11 +89,7 @@ module NZInputFormats {
                     this.setMask(options['mask']);
                 }
                 this.options = angular.extend(this.options, options);
-                if(angular.isFunction(this.ctrl.$$parseAndValidate)) {
-                    this.ctrl.$$parseAndValidate();
-                } else {
-                    this.ctrl.$setViewValue(this.ctrl.$viewValue);
-                }
+                this.ctrl.$setViewValue(this.ctrl.$viewValue);
             }
         }
 

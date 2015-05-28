@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.3.1
+ * @version v0.3.2
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -73,9 +73,6 @@ var NZInputFormats;
             attrs.$observe(this.directiveName, angular.bind(this, this.processAttributeValue));
             ctrl.$formatters.push(angular.bind(this, this.formatter));
             ctrl.$parsers.push(angular.bind(this, this.parser));
-            //if(angular.isArray(ctrl.$validators)) {
-            //    ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
-            //}
         };
         SimpleInputMask.prototype.processAttributeValue = function (value) {
             var options = this.scope.$eval(value);
@@ -84,12 +81,7 @@ var NZInputFormats;
                     this.setMask(options['mask']);
                 }
                 this.options = angular.extend(this.options, options);
-                if (angular.isFunction(this.ctrl.$$parseAndValidate)) {
-                    this.ctrl.$$parseAndValidate();
-                }
-                else {
-                    this.ctrl.$setViewValue(this.ctrl.$viewValue);
-                }
+                this.ctrl.$setViewValue(this.ctrl.$viewValue);
             }
         };
         SimpleInputMask.prototype.updateMask = function (value) {

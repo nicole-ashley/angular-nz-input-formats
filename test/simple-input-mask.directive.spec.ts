@@ -63,6 +63,15 @@ describe('Simple Input Mask', () => {
 
             expect(input.val()).toBe('1d4g');
         });
+
+        it('discards everything after it finds a character that does not belong in the mask at all', () => {
+            var input = compileElement(inputHtml).find('input');
+            $scope.options = '{mask: "999-999-999-999"}';
+
+            input.val('123-456-7X8-901').triggerHandler('input');
+
+            expect(input.val()).toBe('123-456-7');
+        });
         
     });
 

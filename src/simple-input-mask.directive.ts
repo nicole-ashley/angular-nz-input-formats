@@ -130,12 +130,22 @@ module NZInputFormats {
             var parsedParts:string[] = [];
             var elem:HTMLInputElement = <HTMLInputElement>this.elem[0];
 
-            this.mask.every((maskChar:string) => {
+            this.mask.every((maskChar:string, index) => {
                 var nextInputChar:string = inputChars[0];
 
                 if (this.maskChars.hasOwnProperty(maskChar)) {
-                    while (inputChars.length && !inputChars[0].match(this.maskChars[maskChar])) {
-                        inputChars.shift();
+                    while (inputChars.length) {
+                        if (this.isCharacterValidInMask(inputChars[0], this.mask)) {
+                            if (!inputChars[0].match(this.maskChars[maskChar])) {
+                                inputChars.shift();
+                            } else {
+                                break;
+                            }
+                        } else {
+                            // If we find a character that will never match the rest of our mask, bail
+                            // and discard the rest of the input
+                            return false;
+                        }
                     }
                     if (inputChars.length) {
                         parsedParts.push(inputChars.shift());
@@ -186,6 +196,13 @@ module NZInputFormats {
             }
 
             return parsed;
+        }
+
+        private isCharacterValidInMask(character, mask) {
+            return mask.some((maskChar) => {
+                return this.maskChars.hasOwnProperty(maskChar) ?
+                    character.match(this.maskChars[maskChar]) : character === maskChar;
+            });
         }
 
         protected validator() {

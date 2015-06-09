@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.3.3
+ * @version v0.4.0
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -121,11 +121,23 @@ var NZInputFormats;
             var newInputLength = input.length;
             var parsedParts = [];
             var elem = this.elem[0];
-            this.mask.every(function (maskChar) {
+            this.mask.every(function (maskChar, index) {
                 var nextInputChar = inputChars[0];
                 if (_this.maskChars.hasOwnProperty(maskChar)) {
-                    while (inputChars.length && !inputChars[0].match(_this.maskChars[maskChar])) {
-                        inputChars.shift();
+                    while (inputChars.length) {
+                        if (_this.isCharacterValidInMask(inputChars[0], _this.mask)) {
+                            if (!inputChars[0].match(_this.maskChars[maskChar])) {
+                                inputChars.shift();
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        else {
+                            // If we find a character that will never match the rest of our mask, bail
+                            // and discard the rest of the input
+                            return false;
+                        }
                     }
                     if (inputChars.length) {
                         parsedParts.push(inputChars.shift());
@@ -169,6 +181,12 @@ var NZInputFormats;
                 }
             }
             return parsed;
+        };
+        SimpleInputMask.prototype.isCharacterValidInMask = function (character, mask) {
+            var _this = this;
+            return mask.some(function (maskChar) {
+                return _this.maskChars.hasOwnProperty(maskChar) ? character.match(_this.maskChars[maskChar]) : character === maskChar;
+            });
         };
         SimpleInputMask.prototype.validator = function () {
             if (typeof this.ctrl.$viewValue === 'undefined' || this.ctrl.$viewValue === '') {

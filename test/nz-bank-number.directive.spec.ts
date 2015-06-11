@@ -57,6 +57,22 @@ describe('NZ Bank Number', () => {
             expect(input.val()).toBe('01-2345-6789012-345');
         });
 
+        it('disregards null values', () => {
+            $scope.x = null;
+
+            var input = compileElement(inputHtml).find('input');
+
+            expect(input.val()).toBe('');
+        });
+
+        it('disregards NaN values', () => {
+            $scope.x = NaN;
+
+            var input = compileElement(inputHtml).find('input');
+
+            expect(input.val()).toBe('');
+        });
+
     });
 
 

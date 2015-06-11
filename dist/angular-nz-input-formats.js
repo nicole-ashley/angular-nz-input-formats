@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.4.0
+ * @version v0.4.1
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -88,6 +88,9 @@ var NZInputFormats;
         SimpleInputMask.prototype.formatter = function (output) {
             var _this = this;
             if (output === void 0) { output = ''; }
+            if (!output) {
+                return output;
+            }
             this.updateMask(output);
             if (!this.mask) {
                 // Without a mask we have nothing to do
@@ -112,6 +115,9 @@ var NZInputFormats;
         SimpleInputMask.prototype.parser = function (input) {
             var _this = this;
             if (input === void 0) { input = ''; }
+            if (!input) {
+                return input;
+            }
             this.updateMask(input);
             if (!this.mask) {
                 // Without a mask we have nothing to do

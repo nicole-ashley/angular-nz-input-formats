@@ -70,6 +70,22 @@ describe('NZ IRD Number', function () {
             expect(input.val()).toBe('136-410-132');
         });
 
+        it('disregards null values', () => {
+            $scope.x = null;
+
+            var input = compileElement(inputHtml).find('input');
+
+            expect(input.val()).toBe('');
+        });
+
+        it('disregards NaN values', () => {
+            $scope.x = NaN;
+
+            var input = compileElement(inputHtml).find('input');
+
+            expect(input.val()).toBe('');
+        });
+
     });
 
 

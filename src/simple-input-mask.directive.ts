@@ -96,6 +96,10 @@ module NZInputFormats {
         }
 
         protected formatter(output:string = ''):string {
+            if (!output) {
+                return output;
+            }
+
             this.updateMask(output);
             if (!this.mask) {
                 // Without a mask we have nothing to do
@@ -119,6 +123,10 @@ module NZInputFormats {
         }
 
         protected parser(input:string = ''):string {
+            if (!input) {
+                return input;
+            }
+
             this.updateMask(input);
             if (!this.mask) {
                 // Without a mask we have nothing to do

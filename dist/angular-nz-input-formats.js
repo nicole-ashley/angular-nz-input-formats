@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.4.1
+ * @version v0.4.2
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -488,7 +488,7 @@ var NZInputFormats;
                     raw = raw.match(/^(?:0[89]0.*|0[89]|0)?/)[0];
                     break;
                 case 'mobile':
-                    raw = raw.match(/^(?:02[1257].*|02|0)?/)[0];
+                    raw = raw.match(/^(?:02[12579].*|02|0)?/)[0];
                     break;
                 case 'landline':
                     raw = raw.match(/^(?:0[345679].*|0)?/)[0];

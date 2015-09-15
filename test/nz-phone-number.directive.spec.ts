@@ -16,7 +16,9 @@ describe('NZ Phone Number', () => {
     var validValues = [
         '021234567',
         '0223456789',
+        '025890123',
         '027890123',
+        '029890123',
         '034567890',
         '045678901',
         '067890123',
@@ -27,7 +29,9 @@ describe('NZ Phone Number', () => {
         '0900123456',
         '6421234567',
         '64223456789',
+        '6425890123',
         '6427890123',
+        '6429890123',
         '6434567890',
         '6445678901',
         '6467890123',
@@ -51,8 +55,8 @@ describe('NZ Phone Number', () => {
         $compile = _$compile_;
         inputHtml = '<form name="test"><input name="input" ng-model="x" nz-phone-number="{{ options }}"/></form>';
     }));
-    
-    
+
+
     function setModelValue(value) {
         $scope.$apply(() => {
             $scope.x = value;
@@ -146,19 +150,19 @@ describe('NZ Phone Number', () => {
             describe('when limited to mobile numbers', () => {
                 beforeEach(() => {
                     $scope.$apply(() => {
-                       $scope.options.type = 'mobile'; 
+                       $scope.options.type = 'mobile';
                     });
                 });
-                
+
                 it('accepts a mobile number', () => {
                    setModelValue('6421234567');
-                    
+
                     expect(input.val()).toBe('6421 234 567');
                 });
-                
+
                 it('rejects a landline number', () => {
                    setModelValue('6494653627');
-                    
+
                     expect(input.val()).toBe('64');
                 });
 
@@ -172,19 +176,19 @@ describe('NZ Phone Number', () => {
             describe('when limited to landline numbers', () => {
                 beforeEach(() => {
                     $scope.$apply(() => {
-                       $scope.options.type = 'landline'; 
+                       $scope.options.type = 'landline';
                     });
                 });
-                
+
                 it('accepts a landline number', () => {
                    setModelValue('6494653627');
-                    
+
                     expect(input.val()).toBe('649 465 3627');
                 });
-                
+
                 it('rejects a mobile number', () => {
                    setModelValue('6421234567');
-                    
+
                     expect(input.val()).toBe('64');
                 });
 
@@ -198,13 +202,13 @@ describe('NZ Phone Number', () => {
             describe('when limited to special numbers', () => {
                 beforeEach(() => {
                     $scope.$apply(() => {
-                       $scope.options.type = 'special'; 
+                       $scope.options.type = 'special';
                     });
                 });
-                
+
                 it('accepts a special number', () => {
                    setModelValue('64800123456');
-                    
+
                     expect(input.val()).toBe('64800 123 456');
                 });
 
@@ -213,10 +217,10 @@ describe('NZ Phone Number', () => {
 
                     expect(input.val()).toBe('64');
                 });
-                
+
                 it('rejects a landline number', () => {
                    setModelValue('6464653627');
-                    
+
                     expect(input.val()).toBe('64');
                 });
             });

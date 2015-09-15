@@ -1,10 +1,11 @@
 {
   "name": "angular-nz-input-formats",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "homepage": "https://github.com/nikrolls/angular-nz-input-formats",
   "description": "Angular directives to validate and format NZ-specific input types",
   "main": "./dist/angular-nz-input-formats.min.js",
   "scripts": {
+    "postinstall": "bower install",
     "test": "gulp test"
   },
   "repository": {
@@ -29,12 +30,7 @@
       "web": "https://github.com/nikrolls"
     }
   ],
-  "license": [
-    {
-      "type": "MIT",
-      "url": "http://www.opensource.org/licenses/MIT"
-    }
-  ],
+  "license": "MIT",
   "devDependencies": {
     "gulp": "~3.8",
     "gulp-bump": "~0.3",

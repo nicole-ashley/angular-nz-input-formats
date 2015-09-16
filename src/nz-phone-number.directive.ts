@@ -5,8 +5,8 @@ module NZInputFormats {
 
     export class NZPhoneNumber extends SimpleInputMask {
         defaultMask:string = '9999999999999';
-        mobileMask:string = '999 999 999999';
-        intlMobileMask:string = '9999 999 999999';
+        mobileMask:string = '999 999 99999';
+        intlMobileMask:string = '9999 999 99999';
         landlineMask:string = '99 999 9999';
         intlLandlineMask:string = '999 999 9999';
         specialMask:string = '9999 999 999 9999';

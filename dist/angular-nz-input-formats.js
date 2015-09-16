@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.4.3
+ * @version v0.4.4
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -432,8 +432,8 @@ var NZInputFormats;
         function NZPhoneNumber() {
             _super.call(this);
             this.defaultMask = '9999999999999';
-            this.mobileMask = '999 999 999999';
-            this.intlMobileMask = '9999 999 999999';
+            this.mobileMask = '999 999 99999';
+            this.intlMobileMask = '9999 999 99999';
             this.landlineMask = '99 999 9999';
             this.intlLandlineMask = '999 999 9999';
             this.specialMask = '9999 999 999 9999';

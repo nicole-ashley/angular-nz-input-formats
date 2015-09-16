@@ -16,7 +16,7 @@ describe('NZ Phone Number', () => {
     var validValues = [
         '020234567',
         '021234567',
-        '0223456789',
+        '02234567890',
         '025890123',
         '027890123',
         '028890123',
@@ -31,7 +31,7 @@ describe('NZ Phone Number', () => {
         '0900123456',
         '6420234567',
         '6421234567',
-        '64223456789',
+        '642234567890',
         '6425890123',
         '6427890123',
         '6428890123',
@@ -69,7 +69,6 @@ describe('NZ Phone Number', () => {
 
 
     describe('directive-level validation', () => {
-
         it('is limited to attribute invocation', () => {
             var spy = spyOn($scope, '$watch'),
                 naTemplates = [
@@ -83,7 +82,6 @@ describe('NZ Phone Number', () => {
                 expect(spy).not.toHaveBeenCalled();
             }
         });
-
     });
 
 
@@ -109,15 +107,15 @@ describe('NZ Phone Number', () => {
         });
 
         it('correctly formats a mobile number', () => {
-            setModelValue('021234567890');
+            setModelValue('02123456789');
 
-            expect(input.val()).toBe('021 234 567890');
+            expect(input.val()).toBe('021 234 56789');
         });
 
         it('correctly formats a mobile number in international format', () => {
-            setModelValue('6421234567890');
+            setModelValue('642123456789');
 
-            expect(input.val()).toBe('6421 234 567890');
+            expect(input.val()).toBe('6421 234 56789');
         });
 
         it('correctly formats a special number', () => {
@@ -140,9 +138,9 @@ describe('NZ Phone Number', () => {
             });
 
             it('accepts an international number', () => {
-                setModelValue('6421234567890');
+                setModelValue('642123456789012');
 
-                expect(input.val()).toBe('6421 234 567890');
+                expect(input.val()).toBe('6421 234 56789');
             });
 
             it('rejects a local number', () => {
@@ -240,7 +238,7 @@ describe('NZ Phone Number', () => {
             it('correctly formats a local number', () => {
                 setModelValue('02123456789012');
 
-                expect(input.val()).toBe('021 234 567890');
+                expect(input.val()).toBe('021 234 56789');
             });
 
             it('rejects an international number', () => {
@@ -327,12 +325,10 @@ describe('NZ Phone Number', () => {
                 });
             });
         });
-
     });
 
 
     describe('model validation', () => {
-
         it('returns true if no model value has been defined', () => {
             var compiled = compileElement(inputHtml);
             expect($scope.x).toBeUndefined();
@@ -373,7 +369,5 @@ describe('NZ Phone Number', () => {
                 expect(compiled.hasClass('ng-valid')).toBe(false);
             });
         });
-
     });
-
 });

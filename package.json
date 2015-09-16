@@ -1,6 +1,6 @@
 {
   "name": "angular-nz-input-formats",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "homepage": "https://github.com/nikrolls/angular-nz-input-formats",
   "description": "Angular directives to validate and format NZ-specific input types",
   "main": "./dist/angular-nz-input-formats.min.js",

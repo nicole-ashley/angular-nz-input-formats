@@ -70,7 +70,7 @@ module NZInputFormats {
                     raw = raw.match(/^(?:0[89]0.*|0[89]|0)?/)[0];
                     break;
                 case 'mobile':
-                    raw = raw.match(/^(?:02[12579].*|02|0)?/)[0];
+                    raw = raw.match(/^(?:02.*|0)?/)[0];
                     break;
                 case 'landline':
                     raw = raw.match(/^(?:0[345679].*|0)?/)[0];

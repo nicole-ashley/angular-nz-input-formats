@@ -80,6 +80,9 @@ module NZInputFormats {
 
             ctrl.$formatters.push(angular.bind(this, this.formatter));
             ctrl.$parsers.push(angular.bind(this, this.parser));
+            if(angular.isObject(ctrl.$validators)) {
+              ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
+            }
         }
 
         protected processAttributeValue(value) {
@@ -193,8 +196,8 @@ module NZInputFormats {
             if (this.document.activeElement === elem) {
                 elem.selectionStart = elem.selectionEnd = caretPosition;
             }
-            
-            if(!angular.isArray(this.ctrl.$validators)) {
+
+            if(!angular.isObject(this.ctrl.$validators)) {
                 var valid = this.validator();
                 this.ctrl.$setValidity(this.directiveName, valid);
                 // Emulate Angular 1.3 model validation behaviour
@@ -222,12 +225,11 @@ module NZInputFormats {
             if (!this.mask) {
                 return true;
             } else {
-                return this.ctrl.$viewValue.length === this.mask.length;
+                return this.ctrl.$viewValue && this.ctrl.$viewValue.length === this.mask.length;
             }
         }
-        
+
     }
 
     module.directive('nzSimpleInputMask', ['$document', SimpleInputMask.Directive]);
-
 }

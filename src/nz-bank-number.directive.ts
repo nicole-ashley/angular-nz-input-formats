@@ -87,5 +87,4 @@ module NZInputFormats {
     }
 
     module.directive('nzBankNumber', ['$document', NZBankNumber.Directive]);
-
 }

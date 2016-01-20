@@ -102,5 +102,4 @@ module NZInputFormats {
     }
 
     module.directive('nzIrdNumber', ['$document', NZIrdNumber.Directive]);
-
 }

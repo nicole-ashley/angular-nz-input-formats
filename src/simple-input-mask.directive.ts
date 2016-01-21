@@ -21,7 +21,8 @@ module NZInputFormats {
         protected static Document:Document = null;
 
         protected options:{[key:string]:any} = {
-            mask: null
+            mask: null,
+            validateOnLoad: true
         };
 
         private mask:string[] = null;
@@ -77,10 +78,11 @@ module NZInputFormats {
             this.ctrl = ctrl;
 
             attrs.$observe(this.directiveName, <ObserveCallback>angular.bind(this, this.processAttributeValue));
+            this.processAttributeValue(attrs[this.directiveName]);
 
             ctrl.$formatters.push(angular.bind(this, this.formatter));
             ctrl.$parsers.push(angular.bind(this, this.parser));
-            if(angular.isObject(ctrl.$validators)) {
+            if (angular.isObject(ctrl.$validators) && this.options['validateOnLoad']) {
               ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
             }
         }
@@ -127,7 +129,7 @@ module NZInputFormats {
 
         protected parser(input:string = ''):string {
             if (!input) {
-                return input;
+                return this.triggerValidation(input);
             }
 
             this.updateMask(input);
@@ -197,16 +199,17 @@ module NZInputFormats {
                 elem.selectionStart = elem.selectionEnd = caretPosition;
             }
 
-            if(!angular.isObject(this.ctrl.$validators)) {
+            return this.triggerValidation(parsed);
+        }
+
+        private triggerValidation(currentValue) {
+            if(!angular.isObject(this.ctrl.$validators) || !this.options['validateOnLoad']) {
                 var valid = this.validator();
                 this.ctrl.$setValidity(this.directiveName, valid);
                 // Emulate Angular 1.3 model validation behaviour
-                if(!valid) {
-                    return '';
-                }
+                return valid ? currentValue : '';
             }
-
-            return parsed;
+            return currentValue;
         }
 
         private isCharacterValidInMask(character, mask) {
@@ -217,9 +220,10 @@ module NZInputFormats {
         }
 
         protected validator() {
-            if (typeof this.ctrl.$viewValue === 'undefined' || this.ctrl.$viewValue === '') {
-                // No validation for an undefined model value
-                return true;
+            var value = this.ctrl.$viewValue;
+            if (angular.isUndefined(value) || value === null || value === '' || value !== value /*NaN*/) {
+              // No validation for an undefined model value
+              return true;
             }
 
             if (!this.mask) {

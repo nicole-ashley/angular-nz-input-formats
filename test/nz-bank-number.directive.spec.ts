@@ -3,10 +3,8 @@
 ///<reference path="..\definitions\angularjs\angular-mocks.d.ts"/>
 
 describe('NZ Bank Number', () => {
-
-    var $scope,
-        $compile,
-        compileElement = (html) => {
+    var $scope, $compile, inputHtml;
+    var compileElement = (html) => {
             var element = $compile(html)($scope);
             $scope.$digest();
             return element;
@@ -16,13 +14,10 @@ describe('NZ Bank Number', () => {
     beforeEach(inject((_$rootScope_, _$compile_) => {
         $scope = _$rootScope_;
         $compile = _$compile_;
+        inputHtml = '<form name="test"><input name="input" ng-model="x" nz-bank-number="{{options}}" /></form>';
     }));
 
-    var inputHtml = '<form name="test"><input name="input" ng-model="x" nz-bank-number="{{options}}" /></form>';
-
-
     describe('directive-level validation', () => {
-
         it('is limited to attribute invocation', () => {
             var naTemplates = [
                 '<div class="nz-bank-number"></div>',
@@ -35,70 +30,65 @@ describe('NZ Bank Number', () => {
                 expect(() => compileElement(template)).not.toThrow();
             });
         });
-
     });
 
-
     describe('instantiation', () => {
-
         it('formats a short bank account number correctly', () => {
             $scope.x = '012345678901234';
-
             var input = compileElement(inputHtml).find('input');
-
             expect(input.val()).toBe('01-2345-6789012-34');
         });
 
         it('formats a long bank account number correctly', () => {
             $scope.x = '0123456789012345';
-
             var input = compileElement(inputHtml).find('input');
-
             expect(input.val()).toBe('01-2345-6789012-345');
         });
 
         it('disregards null values', () => {
             $scope.x = null;
-
             var input = compileElement(inputHtml).find('input');
-
             expect(input.val()).toBe('');
         });
 
         it('disregards NaN values', () => {
             $scope.x = NaN;
-
             var input = compileElement(inputHtml).find('input');
-
             expect(input.val()).toBe('');
         });
 
-    });
+        it('does not strip the last character in a masked long-format bank account number', () => {
+            $scope.x = '012345XXX9012345';
+            var input = compileElement(inputHtml).find('input');
+            expect(input.val()).toBe('01-2345-XXX9012-345');
+        });
 
+        it('does not invalidate masked account numbers on load', () => {
+            $scope.x = '012345XXX9012345';
 
-    describe('interaction', () => {
-
-        it('formats a short bank account number correctly', () => {
             var input = compileElement(inputHtml).find('input');
 
-            input.val('012345678901234').triggerHandler('input');
+            expect(input.val()).toBe('01-2345-XXX9012-345');
+            expect(input.hasClass('ng-valid')).toBe(true);
+        });
+    });
 
+    describe('interaction', () => {
+        it('formats a short bank account number correctly', () => {
+            var input = compileElement(inputHtml).find('input');
+            input.val('012345678901234').triggerHandler('input');
             expect(input.val()).toBe('01-2345-6789012-34');
         });
 
         it('formats a long bank account number correctly', () => {
             var input = compileElement(inputHtml).find('input');
-
             input.val('0123456789012345').triggerHandler('input');
-
             expect(input.val()).toBe('01-2345-6789012-345');
         });
-
     });
 
 
     describe('model validation', () => {
-
         var compiled;
 
         beforeEach(() => {
@@ -117,7 +107,6 @@ describe('NZ Bank Number', () => {
 
         it('returns false if the input is too short', () => {
             compiled.find('input').val('01234567890123').triggerHandler('input');
-
             expect(compiled.hasClass('ng-invalid')).toBe(true);
         });
 
@@ -160,9 +149,6 @@ describe('NZ Bank Number', () => {
                 compiled.find('input').val('03-1586-0050010-00').triggerHandler('input');
                 expect(compiled.hasClass('ng-invalid')).toBe(true);
             });
-
         });
-
     });
-
 });

@@ -41,7 +41,7 @@ module NZInputFormats {
             }
 
             value = String(value || '');
-            if (value.replace(/\D/g, '').length <= 15) {
+            if (value.replace(/[\s-]/g, '').length <= 15) {
                 this.setMask(this.shortMask);
             } else {
                 this.setMask(this.longMask);
@@ -52,7 +52,7 @@ module NZInputFormats {
             var superVal:boolean = super.validator();
 
             var value = this.ctrl.$viewValue;
-            if (angular.isUndefined(value) || value === null || value === '') {
+            if (angular.isUndefined(value) || value === null || value === '' || value !== value /*NaN*/) {
                 // No validation for an undefined model value
                 return true;
             }

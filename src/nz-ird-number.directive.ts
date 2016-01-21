@@ -32,12 +32,13 @@ module NZInputFormats {
         }
 
         protected validator() {
-            if (typeof this.ctrl.$viewValue === 'undefined' || this.ctrl.$viewValue === '') {
+            var value = this.ctrl.$viewValue;
+            if (angular.isUndefined(value) || value === null || value === '' || value !== value /*NaN*/) {
                 // No validation for an undefined model value
                 return true;
             }
 
-            var input = NZIrdNumber.Extract(this.ctrl.$viewValue);
+            var input = NZIrdNumber.Extract(value);
             if (!input) {
                 return false;
             }

@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.4.5
+ * @version v0.5.0
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -25,7 +25,8 @@ var NZInputFormats;
             this.link = null;
             this.directiveName = 'nzSimpleInputMask';
             this.options = {
-                mask: null
+                mask: null,
+                validateOnLoad: true
             };
             this.mask = null;
             this.maskChars = {
@@ -71,9 +72,10 @@ var NZInputFormats;
             this.elem = elem;
             this.ctrl = ctrl;
             attrs.$observe(this.directiveName, angular.bind(this, this.processAttributeValue));
+            this.processAttributeValue(attrs[this.directiveName]);
             ctrl.$formatters.push(angular.bind(this, this.formatter));
             ctrl.$parsers.push(angular.bind(this, this.parser));
-            if (angular.isObject(ctrl.$validators)) {
+            if (angular.isObject(ctrl.$validators) && this.options['validateOnLoad']) {
                 ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
             }
         };
@@ -119,7 +121,7 @@ var NZInputFormats;
             var _this = this;
             if (input === void 0) { input = ''; }
             if (!input) {
-                return input;
+                return this.triggerValidation(input);
             }
             this.updateMask(input);
             if (!this.mask) {
@@ -181,15 +183,16 @@ var NZInputFormats;
             if (this.document.activeElement === elem) {
                 elem.selectionStart = elem.selectionEnd = caretPosition;
             }
-            if (!angular.isObject(this.ctrl.$validators)) {
+            return this.triggerValidation(parsed);
+        };
+        SimpleInputMask.prototype.triggerValidation = function (currentValue) {
+            if (!angular.isObject(this.ctrl.$validators) || !this.options['validateOnLoad']) {
                 var valid = this.validator();
                 this.ctrl.$setValidity(this.directiveName, valid);
                 // Emulate Angular 1.3 model validation behaviour
-                if (!valid) {
-                    return '';
-                }
+                return valid ? currentValue : '';
             }
-            return parsed;
+            return currentValue;
         };
         SimpleInputMask.prototype.isCharacterValidInMask = function (character, mask) {
             var _this = this;
@@ -198,7 +201,8 @@ var NZInputFormats;
             });
         };
         SimpleInputMask.prototype.validator = function () {
-            if (typeof this.ctrl.$viewValue === 'undefined' || this.ctrl.$viewValue === '') {
+            var value = this.ctrl.$viewValue;
+            if (angular.isUndefined(value) || value === null || value === '' || value !== value) {
                 // No validation for an undefined model value
                 return true;
             }
@@ -274,7 +278,7 @@ var NZInputFormats;
                 return;
             }
             value = String(value || '');
-            if (value.replace(/\D/g, '').length <= 15) {
+            if (value.replace(/[\s-]/g, '').length <= 15) {
                 this.setMask(this.shortMask);
             }
             else {
@@ -284,7 +288,7 @@ var NZInputFormats;
         NZBankNumber.prototype.validator = function () {
             var superVal = _super.prototype.validator.call(this);
             var value = this.ctrl.$viewValue;
-            if (angular.isUndefined(value) || value === null || value === '') {
+            if (angular.isUndefined(value) || value === null || value === '' || value !== value) {
                 // No validation for an undefined model value
                 return true;
             }
@@ -352,11 +356,12 @@ var NZInputFormats;
             }
         };
         NZIrdNumber.prototype.validator = function () {
-            if (typeof this.ctrl.$viewValue === 'undefined' || this.ctrl.$viewValue === '') {
+            var value = this.ctrl.$viewValue;
+            if (angular.isUndefined(value) || value === null || value === '' || value !== value) {
                 // No validation for an undefined model value
                 return true;
             }
-            var input = NZIrdNumber.Extract(this.ctrl.$viewValue);
+            var input = NZIrdNumber.Extract(value);
             if (!input) {
                 return false;
             }
@@ -501,7 +506,12 @@ var NZInputFormats;
             return _super.prototype.formatter.call(this, output);
         };
         NZPhoneNumber.prototype.validator = function () {
-            var value = NZPhoneNumber.sanitise(this.ctrl.$viewValue);
+            var value = this.ctrl.$viewValue;
+            if (angular.isUndefined(value) || value === null || value === '' || value !== value) {
+                // No validation for an undefined model value
+                return true;
+            }
+            value = NZPhoneNumber.sanitise(value);
             return value.length === 0 || value.length >= this.minLength;
         };
         NZPhoneNumber.sanitise = function (input) {

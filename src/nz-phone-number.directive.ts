@@ -83,7 +83,13 @@ module NZInputFormats {
         }
 
         protected validator() {
-            var value = NZPhoneNumber.sanitise(this.ctrl.$viewValue);
+            var value = this.ctrl.$viewValue;
+            if (angular.isUndefined(value) || value === null || value === '' || value !== value /*NaN*/) {
+                // No validation for an undefined model value
+                return true;
+            }
+
+            value = NZPhoneNumber.sanitise(value);
             return value.length === 0 || value.length >= this.minLength;
         }
 

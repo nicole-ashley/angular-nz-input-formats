@@ -1,9 +1,10 @@
 language: node_js
 
 node_js:
-  - "0.10"
+  - "4.3.1"
+  - "5.7.0"
 
-before_script:
+before_install:
   - npm install -g gulp
   - npm install -g bower
   - npm install -g codeclimate-test-reporter

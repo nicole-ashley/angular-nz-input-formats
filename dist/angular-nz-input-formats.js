@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.5.0
+ * @version v0.5.1
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -179,7 +179,7 @@ var NZInputFormats;
             this.lastLen = formatted.length;
             this.elem.val(formatted);
             this.ctrl.$viewValue = formatted;
-            this.ctrl.$render();
+            this.ctrl.$commitViewValue();
             if (this.document.activeElement === elem) {
                 elem.selectionStart = elem.selectionEnd = caretPosition;
             }

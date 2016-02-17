@@ -193,7 +193,7 @@ module NZInputFormats {
 
             this.elem.val(formatted);
             this.ctrl.$viewValue = formatted;
-            this.ctrl.$render();
+            this.ctrl.$commitViewValue();
 
             if (this.document.activeElement === elem) {
                 elem.selectionStart = elem.selectionEnd = caretPosition;

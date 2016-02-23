@@ -172,7 +172,7 @@ module NZInputFormats {
             var parsed:string = parsedParts.join('');
 
             var formatted:string = this.formatter(parsed);
-            var caretPosition:number = elem.selectionStart;
+            var caretPosition:number = elem.selectionEnd;
 
             if (newInputLength > this.lastLen) {
                 var maskChar:string = this.mask[caretPosition - 1];

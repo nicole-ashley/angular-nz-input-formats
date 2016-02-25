@@ -1,7 +1,7 @@
 /*!
  * angular-nz-input-formats
  * Angular directives to validate and format NZ-specific input types
- * @version v0.5.0
+ * @version v0.5.2
  * @link https://github.com/nikrolls/angular-nz-input-formats
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -91,7 +91,6 @@ var NZInputFormats;
         SimpleInputMask.prototype.updateMask = function (value) {
         };
         SimpleInputMask.prototype.formatter = function (output) {
-            var _this = this;
             if (output === void 0) { output = ''; }
             if (!output) {
                 return output;
@@ -101,24 +100,21 @@ var NZInputFormats;
                 // Without a mask we have nothing to do
                 return output;
             }
-            output = String(output);
+            return this.applyMaskToString(String(output));
+        };
+        SimpleInputMask.prototype.applyMaskToString = function (str) {
+            var _this = this;
             var formatted = '';
             var rawPos = 0;
             this.mask.some(function (maskChar) {
-                if (rawPos >= output.length) {
+                if (rawPos >= str.length) {
                     return true;
                 }
-                if (_this.maskChars.hasOwnProperty(maskChar)) {
-                    formatted += output.charAt(rawPos++);
-                }
-                else {
-                    formatted += maskChar;
-                }
+                formatted += _this.isMaskCharEditable(maskChar) ? str.charAt(rawPos++) : maskChar;
             });
             return formatted;
         };
         SimpleInputMask.prototype.parser = function (input) {
-            var _this = this;
             if (input === void 0) { input = ''; }
             if (!input) {
                 return this.triggerValidation(input);
@@ -128,62 +124,97 @@ var NZInputFormats;
                 // Without a mask we have nothing to do
                 return input;
             }
-            var inputChars = (input || '').split('');
-            var newInputLength = input.length;
+            var parsed = this.removeMaskFromString(input);
+            var formatted = this.formatter(parsed);
+            var cursorPosition = this.elem[0].selectionEnd;
+            var newCursorPosition = this.calculateNewCursorPosition(input, formatted, cursorPosition);
+            this.updateFieldWith(formatted);
+            this.updateCursorPositionIfElementIsActive(newCursorPosition);
+            return this.triggerValidation(parsed);
+        };
+        SimpleInputMask.prototype.removeMaskFromString = function (str) {
+            var _this = this;
+            var inputChars = (str || '').split('');
             var parsedParts = [];
-            var elem = this.elem[0];
-            this.mask.every(function (maskChar, index) {
-                var nextInputChar = inputChars[0];
-                if (_this.maskChars.hasOwnProperty(maskChar)) {
-                    while (inputChars.length) {
-                        if (_this.isCharacterValidInMask(inputChars[0], _this.mask)) {
-                            if (!inputChars[0].match(_this.maskChars[maskChar])) {
-                                inputChars.shift();
-                            }
-                            else {
-                                break;
-                            }
-                        }
-                        else {
-                            // If we find a character that will never match the rest of our mask, bail
-                            // and discard the rest of the input
-                            return false;
-                        }
-                    }
-                    if (inputChars.length) {
+            this.mask.every(function (maskChar) {
+                if (_this.isMaskCharEditable(maskChar)) {
+                    inputChars = _this.discardCharactersUntilNextMatch(inputChars, maskChar);
+                    if (inputChars && inputChars.length) {
                         parsedParts.push(inputChars.shift());
                     }
                 }
-                else if (nextInputChar === maskChar) {
+                else if (inputChars[0] === maskChar) {
                     inputChars.shift();
                 }
-                return inputChars.length > 0;
+                return inputChars && inputChars.length > 0;
             });
-            var parsed = parsedParts.join('');
-            var formatted = this.formatter(parsed);
-            var caretPosition = elem.selectionStart;
-            if (newInputLength > this.lastLen) {
-                var maskChar = this.mask[caretPosition - 1];
-                var currentPositionIsEditable = this.maskChars.hasOwnProperty(maskChar);
-                if (currentPositionIsEditable) {
-                    if (!input.charAt(caretPosition - 1).match(this.maskChars[maskChar])) {
-                        caretPosition--;
-                    }
+            return parsedParts.join('');
+        };
+        SimpleInputMask.prototype.discardCharactersUntilNextMatch = function (inputChars, maskChar) {
+            inputChars = angular.copy(inputChars);
+            var maskCharPattern = this.maskChars[maskChar];
+            while (inputChars.length) {
+                if (!this.isCharacterValidInMask(inputChars[0], this.mask)) {
+                    // If we find a character that will never match the rest of our mask, bail
+                    // and discard the rest of the input
+                    return null;
+                }
+                if (inputChars[0].match(maskCharPattern)) {
+                    break;
+                }
+                inputChars.shift();
+            }
+            return inputChars;
+        };
+        SimpleInputMask.prototype.isCharacterValidInMask = function (character, mask) {
+            var _this = this;
+            return mask.some(function (maskChar) {
+                return _this.isMaskCharEditable(maskChar) ? character.match(_this.maskChars[maskChar]) : character === maskChar;
+            });
+        };
+        SimpleInputMask.prototype.isMaskCharEditable = function (maskChar) {
+            return this.maskChars.hasOwnProperty(maskChar);
+        };
+        SimpleInputMask.prototype.calculateNewCursorPosition = function (input, formatted, cursorPosition) {
+            if (input.length > this.lastLen) {
+                if (this.isPositionEditable(cursorPosition)) {
+                    cursorPosition = this.revertCursorMoveIfCharacterWasInvalid(input, cursorPosition);
                 }
                 else {
-                    while (caretPosition < formatted.length && !this.maskChars.hasOwnProperty(this.mask[caretPosition - 1])) {
-                        caretPosition++;
-                    }
+                    cursorPosition = this.getNextEditablePosition(cursorPosition, formatted.length);
                 }
             }
-            this.lastLen = formatted.length;
-            this.elem.val(formatted);
-            this.ctrl.$viewValue = formatted;
-            this.ctrl.$render();
-            if (this.document.activeElement === elem) {
-                elem.selectionStart = elem.selectionEnd = caretPosition;
+            return cursorPosition;
+        };
+        SimpleInputMask.prototype.isPositionEditable = function (cursorPosition) {
+            var maskChar = this.mask[cursorPosition - 1];
+            return this.maskChars.hasOwnProperty(maskChar);
+        };
+        SimpleInputMask.prototype.revertCursorMoveIfCharacterWasInvalid = function (input, cursorPosition) {
+            var position = cursorPosition - 1;
+            var maskCharPattern = this.maskChars[this.mask[position]];
+            if (!input.charAt(position).match(maskCharPattern)) {
+                cursorPosition--;
             }
-            return this.triggerValidation(parsed);
+            return cursorPosition;
+        };
+        SimpleInputMask.prototype.getNextEditablePosition = function (cursorPosition, length) {
+            while (cursorPosition < length && !this.isMaskCharEditable(this.mask[cursorPosition - 1])) {
+                cursorPosition++;
+            }
+            return cursorPosition;
+        };
+        SimpleInputMask.prototype.updateFieldWith = function (formattedValue) {
+            this.lastLen = formattedValue.length;
+            this.elem.val(formattedValue);
+            this.ctrl.$viewValue = formattedValue;
+            this.ctrl.$commitViewValue();
+        };
+        SimpleInputMask.prototype.updateCursorPositionIfElementIsActive = function (cursorPosition) {
+            var elem = this.elem[0];
+            if (this.document.activeElement === elem) {
+                elem.selectionStart = elem.selectionEnd = cursorPosition;
+            }
         };
         SimpleInputMask.prototype.triggerValidation = function (currentValue) {
             if (!angular.isObject(this.ctrl.$validators) || !this.options['validateOnLoad']) {
@@ -193,12 +224,6 @@ var NZInputFormats;
                 return valid ? currentValue : '';
             }
             return currentValue;
-        };
-        SimpleInputMask.prototype.isCharacterValidInMask = function (character, mask) {
-            var _this = this;
-            return mask.some(function (maskChar) {
-                return _this.maskChars.hasOwnProperty(maskChar) ? character.match(_this.maskChars[maskChar]) : character === maskChar;
-            });
         };
         SimpleInputMask.prototype.validator = function () {
             var value = this.ctrl.$viewValue;

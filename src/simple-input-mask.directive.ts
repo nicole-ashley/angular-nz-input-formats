@@ -2,7 +2,7 @@
 ///<reference path="angular-nz-input-formats.ts"/>
 
 interface ObserveCallback {
-    (value?:any): any
+    (value?: any): any
 }
 
 module NZInputFormats {
@@ -15,31 +15,31 @@ module NZInputFormats {
         // Directive properties
         public require = 'ngModel';
         public restrict = 'A';
-        public link:Function = null;
-        public directiveName:string = 'nzSimpleInputMask';
+        public link: Function = null;
+        public directiveName = 'nzSimpleInputMask';
 
-        protected static Document:Document = null;
+        protected static Document: Document = null;
 
-        protected options:{[key:string]:any} = {
+        protected options: {[key:string]:any} = {
             mask: null,
             validateOnLoad: true
         };
 
-        private mask:string[] = null;
-        private maskChars:MaskDictionary = {
+        private mask: string[] = null;
+        private maskChars: MaskDictionary = {
             '*': /./,
             'A': /[A-Za-z]/,
             '9': /[0-9]/
         };
 
-        protected scope:angular.IScope = null;
-        protected elem:angular.IAugmentedJQuery = null;
-        protected ctrl:any = null;
-        protected document:Document = null;
+        protected scope: angular.IScope = null;
+        protected elem: angular.IAugmentedJQuery = null;
+        protected ctrl: any = null;
+        protected document: Document = null;
 
-        private lastLen:number = 0;
+        private lastLen = 0;
 
-        constructor(mask:string = null, maskChars:MaskDictionary = null) {
+        constructor(mask: string = null, maskChars: MaskDictionary = null) {
             this.setMask(mask);
             if (maskChars) {
                 this.maskChars = maskChars;
@@ -47,7 +47,7 @@ module NZInputFormats {
             this.link = angular.bind(this, this.doLink);
         }
 
-        protected setMask(mask:string):void {
+        protected setMask(mask: string): void {
             if (mask !== this.options['mask']) {
                 this.mask = mask.split('');
                 this.options['mask'] = mask;
@@ -57,13 +57,15 @@ module NZInputFormats {
             }
         }
 
-        public static Directive($document, T = SimpleInputMask):angular.IDirective {
+        public static Directive($document, T = SimpleInputMask): angular.IDirective {
             SimpleInputMask.Document = $document[0];
             return {
                 require: 'ngModel',
                 restrict: 'A',
-                link: function link(scope:angular.IScope, elem:angular.IAugmentedJQuery, attrs:angular.IAttributes,
-                                    ctrl:any, transclude:angular.ITranscludeFunction) {
+                link: function link(
+                    scope: angular.IScope, elem: angular.IAugmentedJQuery, attrs: angular.IAttributes,
+                    ctrl: any, transclude: angular.ITranscludeFunction
+                ) {
                     var inst = new T();
                     inst.document = SimpleInputMask.Document;
                     return inst.doLink(scope, elem, attrs, ctrl, transclude);
@@ -71,8 +73,10 @@ module NZInputFormats {
             };
         }
 
-        protected doLink(scope:angular.IScope, elem:angular.IAugmentedJQuery, attrs:angular.IAttributes, ctrl:any,
-                         transclude:angular.ITranscludeFunction):void {
+        protected doLink(
+            scope: angular.IScope, elem: angular.IAugmentedJQuery, attrs: angular.IAttributes, ctrl: any,
+            transclude: angular.ITranscludeFunction
+        ): void {
             this.scope = scope;
             this.elem = elem;
             this.ctrl = ctrl;
@@ -83,7 +87,7 @@ module NZInputFormats {
             ctrl.$formatters.push(angular.bind(this, this.formatter));
             ctrl.$parsers.push(angular.bind(this, this.parser));
             if (angular.isObject(ctrl.$validators) && this.options['validateOnLoad']) {
-              ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
+                ctrl.$validators[this.directiveName] = angular.bind(this, this.validator);
             }
         }
 
@@ -97,10 +101,10 @@ module NZInputFormats {
             }
         }
 
-        protected updateMask(value):void {
+        protected updateMask(value): void {
         }
 
-        protected formatter(output:string = ''):string {
+        protected formatter(output: string = ''): string {
             if (!output) {
                 return output;
             }
@@ -111,23 +115,22 @@ module NZInputFormats {
                 return output;
             }
 
-            output = String(output);
-            var formatted:string = '';
-            var rawPos:number = 0;
+            return this.applyMaskToString(String(output));
+        }
+
+        private applyMaskToString(str: string): string {
+            var formatted = '';
+            var rawPos = 0;
             this.mask.some((maskChar) => {
-                if (rawPos >= output.length) {
+                if (rawPos >= str.length) {
                     return true;
                 }
-                if (this.maskChars.hasOwnProperty(maskChar)) {
-                    formatted += output.charAt(rawPos++);
-                } else {
-                    formatted += maskChar;
-                }
+                formatted += this.isMaskCharEditable(maskChar) ? str.charAt(rawPos++) : maskChar;
             });
             return formatted;
         }
 
-        protected parser(input:string = ''):string {
+        protected parser(input: string = ''): string {
             if (!input) {
                 return this.triggerValidation(input);
             }
@@ -138,72 +141,114 @@ module NZInputFormats {
                 return input;
             }
 
-            var inputChars:string[] = (input || '').split('');
-            var newInputLength:number = input.length;
-            var parsedParts:string[] = [];
-            var elem:HTMLInputElement = <HTMLInputElement>this.elem[0];
+            var parsed = this.removeMaskFromString(input);
+            var formatted = this.formatter(parsed);
 
-            this.mask.every((maskChar:string, index) => {
-                var nextInputChar:string = inputChars[0];
+            var cursorPosition = (<HTMLInputElement>this.elem[0]).selectionEnd;
+            var newCursorPosition = this.calculateNewCursorPosition(input, formatted, cursorPosition);
 
-                if (this.maskChars.hasOwnProperty(maskChar)) {
-                    while (inputChars.length) {
-                        if (this.isCharacterValidInMask(inputChars[0], this.mask)) {
-                            if (!inputChars[0].match(this.maskChars[maskChar])) {
-                                inputChars.shift();
-                            } else {
-                                break;
-                            }
-                        } else {
-                            // If we find a character that will never match the rest of our mask, bail
-                            // and discard the rest of the input
-                            return false;
-                        }
-                    }
-                    if (inputChars.length) {
-                        parsedParts.push(inputChars.shift());
-                    }
-                } else if (nextInputChar === maskChar) {
-                    inputChars.shift();
-                }
-
-                return inputChars.length > 0;
-            });
-            var parsed:string = parsedParts.join('');
-
-            var formatted:string = this.formatter(parsed);
-            var caretPosition:number = elem.selectionEnd;
-
-            if (newInputLength > this.lastLen) {
-                var maskChar:string = this.mask[caretPosition - 1];
-                var currentPositionIsEditable:boolean = this.maskChars.hasOwnProperty(maskChar);
-                if (currentPositionIsEditable) {
-                    if (!input.charAt(caretPosition - 1).match(this.maskChars[maskChar])) {
-                        caretPosition--;
-                    }
-                } else {
-                    while (caretPosition < formatted.length
-                    && !this.maskChars.hasOwnProperty(this.mask[caretPosition - 1])) {
-                        caretPosition++;
-                    }
-                }
-            }
-
-            this.lastLen = formatted.length;
-
-            this.elem.val(formatted);
-            this.ctrl.$viewValue = formatted;
-            this.ctrl.$render();
-
-            if (this.document.activeElement === elem) {
-                elem.selectionStart = elem.selectionEnd = caretPosition;
-            }
+            this.updateFieldWith(formatted);
+            this.updateCursorPositionIfElementIsActive(newCursorPosition);
 
             return this.triggerValidation(parsed);
         }
 
+        private removeMaskFromString(str: string) {
+            var inputChars = (str || '').split('');
+            var parsedParts: string[] = [];
+
+            this.mask.every((maskChar: string) => {
+                if (this.isMaskCharEditable(maskChar)) {
+                    inputChars = this.discardCharactersUntilNextMatch(inputChars, maskChar);
+                    if (inputChars && inputChars.length) {
+                        parsedParts.push(inputChars.shift());
+                    }
+                } else if (inputChars[0] === maskChar) {
+                    inputChars.shift();
+                }
+
+                return inputChars && inputChars.length > 0;
+            });
+            return parsedParts.join('');
+        }
+
+        private discardCharactersUntilNextMatch(inputChars: string[], maskChar: string): string[] {
+            inputChars = angular.copy(inputChars);
+            var maskCharPattern = this.maskChars[maskChar];
+            while (inputChars.length) {
+                if (!this.isCharacterValidInMask(inputChars[0], this.mask)) {
+                    // If we find a character that will never match the rest of our mask, bail
+                    // and discard the rest of the input
+                    return null;
+                }
+                if (inputChars[0].match(maskCharPattern)) {
+                    break;
+                }
+                inputChars.shift();
+            }
+
+            return inputChars;
+        }
+
+        private isCharacterValidInMask(character, mask) {
+            return mask.some((maskChar) => {
+                return this.isMaskCharEditable(maskChar) ?
+                    character.match(this.maskChars[maskChar]) : character === maskChar;
+            });
+        }
+
+        private isMaskCharEditable(maskChar: string) {
+            return this.maskChars.hasOwnProperty(maskChar);
+        }
+
+        private calculateNewCursorPosition(input: string, formatted: string, cursorPosition: number): number {
+            if (input.length > this.lastLen) {
+                if (this.isPositionEditable(cursorPosition)) {
+                    cursorPosition = this.revertCursorMoveIfCharacterWasInvalid(input, cursorPosition);
+                } else {
+                    cursorPosition = this.getNextEditablePosition(cursorPosition, formatted.length);
+                }
+            }
+            return cursorPosition;
+        }
+
+        private isPositionEditable(cursorPosition) {
+            var maskChar = this.mask[cursorPosition - 1];
+            return this.maskChars.hasOwnProperty(maskChar);
+        }
+
+        private revertCursorMoveIfCharacterWasInvalid(input: string, cursorPosition: number): number {
+            var position = cursorPosition - 1;
+            var maskCharPattern = this.maskChars[this.mask[position]];
+            if (!input.charAt(position).match(maskCharPattern)) {
+                cursorPosition--;
+            }
+            return cursorPosition;
+        }
+
+        private getNextEditablePosition(cursorPosition: number, length: number): number {
+            while (cursorPosition < length && !this.isMaskCharEditable(this.mask[cursorPosition - 1])) {
+                cursorPosition++;
+            }
+            return cursorPosition;
+        }
+
+        private updateFieldWith(formattedValue) {
+            this.lastLen = formattedValue.length;
+            this.elem.val(formattedValue);
+            this.ctrl.$viewValue = formattedValue;
+            this.ctrl.$commitViewValue();
+        }
+
+        private updateCursorPositionIfElementIsActive(cursorPosition) {
+            var elem = <HTMLInputElement>this.elem[0];
+            if (this.document.activeElement === elem) {
+                elem.selectionStart = elem.selectionEnd = cursorPosition;
+            }
+        }
+
         private triggerValidation(currentValue) {
-            if(!angular.isObject(this.ctrl.$validators) || !this.options['validateOnLoad']) {
+            if (!angular.isObject(this.ctrl.$validators) || !this.options['validateOnLoad']) {
                 var valid = this.validator();
                 this.ctrl.$setValidity(this.directiveName, valid);
                 // Emulate Angular 1.3 model validation behaviour
@@ -212,18 +257,11 @@ module NZInputFormats {
             return currentValue;
         }
 
-        private isCharacterValidInMask(character, mask) {
-            return mask.some((maskChar) => {
-                return this.maskChars.hasOwnProperty(maskChar) ?
-                    character.match(this.maskChars[maskChar]) : character === maskChar;
-            });
-        }
-
         protected validator() {
             var value = this.ctrl.$viewValue;
             if (angular.isUndefined(value) || value === null || value === '' || value !== value /*NaN*/) {
-              // No validation for an undefined model value
-              return true;
+                // No validation for an undefined model value
+                return true;
             }
 
             if (!this.mask) {
@@ -232,7 +270,6 @@ module NZInputFormats {
                 return this.ctrl.$viewValue && this.ctrl.$viewValue.length === this.mask.length;
             }
         }
-
     }
 
     module.directive('nzSimpleInputMask', ['$document', SimpleInputMask.Directive]);

@@ -86,6 +86,15 @@ describe('Simple Input Mask', () => {
 
       expect(input.val()).toBe('123-456-7');
     });
+
+    it('does not allow invalid characters when typing them quickly', () => {
+      var input = compileElement(inputHtml).find('input');
+      $scope.$apply(() => $scope.options = '{mask: "999"}');
+
+      input.val('a').triggerHandler('input');
+      input.val('a').triggerHandler('input');
+      expect(input.val()).toBe('');
+    });
   });
 
   describe('model validation', () => {
